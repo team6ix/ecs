@@ -20,7 +20,8 @@ plugins {
 mainClassName = 'App'
 
 dependencies { 
-
+	//twilio sdk
+	compile group: "com.twilio.sdk", name: "twilio", version: "7.22.0"
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'
 }
