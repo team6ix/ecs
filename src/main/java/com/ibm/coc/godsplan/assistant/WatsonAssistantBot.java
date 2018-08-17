@@ -40,7 +40,6 @@ public class WatsonAssistantBot
     */
    public String sendAssistantMessage(Optional<Context> context, Optional<InputData> input)
    {
-
       MessageOptions options = buildOptions(context, input);
       MessageResponse resp = this.servissimo.message(options).execute();
       lastResponse = Optional.ofNullable(resp);
