@@ -5,6 +5,7 @@ import com.ibm.watson.developer_cloud.assistant.v1.Assistant;
 import com.ibm.watson.developer_cloud.assistant.v1.model.Context;
 import com.ibm.watson.developer_cloud.assistant.v1.model.InputData;
 import com.ibm.watson.developer_cloud.assistant.v1.model.MessageOptions;
+import com.ibm.watson.developer_cloud.assistant.v1.model.MessageOptions.Builder;
 import com.ibm.watson.developer_cloud.assistant.v1.model.MessageResponse;
 
 /**
@@ -40,20 +41,24 @@ public class WatsonAssistantBot
    public String sendAssistantMessage(Optional<Context> context, Optional<InputData> input)
    {
 
-      MessageOptions options;
-      if (context.isPresent() && input.isPresent())
-      {
-         options = new MessageOptions.Builder(WORKSPACE_ID).input(input.get())
-               .context(context.get()).build();
-      }
-      else
-      {
-         options = new MessageOptions.Builder(WORKSPACE_ID).build();
-      }
-
+      MessageOptions options = buildOptions(context, input);
       MessageResponse resp = this.servissimo.message(options).execute();
       lastResponse = Optional.ofNullable(resp);
       return resp.getOutput().getText().toString();
+   }
+
+   private MessageOptions buildOptions(Optional<Context> context, Optional<InputData> input)
+   {
+      Builder msgBuilder = new MessageOptions.Builder(WORKSPACE_ID);
+      if (context.isPresent())
+      {
+         msgBuilder = msgBuilder.context(context.get());
+      }
+      if (input.isPresent())
+      {
+         msgBuilder = msgBuilder.input(input.get());
+      }
+      return msgBuilder.build();
    }
 
    /**
