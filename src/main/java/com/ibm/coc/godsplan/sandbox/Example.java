@@ -1,5 +1,7 @@
 package com.ibm.coc.godsplan.sandbox;
 
+import java.util.Optional;
+import com.ibm.coc.godsplan.assistant.WatsonAssistantBot;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
@@ -16,8 +18,11 @@ public class Example
    {
       Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
 
-      Message message = Message.creator(new PhoneNumber(CLIENT_PHONE_NUMBER), new PhoneNumber(SERVER_PHONE_NUMBER),
-            "This is the ship that made the Kessel Run in fourteen parsecs?").create();
+      WatsonAssistantBot watson = new WatsonAssistantBot();
+      String resp = watson.sendAssistantMessage(Optional.empty(), Optional.empty());
+
+      Message message = Message
+            .creator(new PhoneNumber(CLIENT_PHONE_NUMBER), new PhoneNumber(SERVER_PHONE_NUMBER), resp).create();
 
       System.out.println(message.getSid());
    }
