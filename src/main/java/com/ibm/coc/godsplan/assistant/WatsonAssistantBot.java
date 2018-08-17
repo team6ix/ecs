@@ -43,6 +43,11 @@ public class WatsonAssistantBot
       MessageOptions options = buildOptions(context, input);
       MessageResponse resp = this.servissimo.message(options).execute();
       lastResponse = Optional.ofNullable(resp);
+      return getResponseText(resp);
+   }
+
+   private String getResponseText(MessageResponse resp)
+   {
       return resp.getOutput().getText().toString();
    }
 
