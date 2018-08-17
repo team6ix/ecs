@@ -13,6 +13,7 @@ import com.ibm.watson.developer_cloud.assistant.v1.model.MessageResponse;
 public class WatsonAssistantBot
 {
 
+   private static final String WORKSPACE_ID = "e9fc9a95-fbfb-4210-b8e8-bd40cb3bebe2";
    private static final String ENC_PASSWD = "5oZIyaeGU1Pc";
    private static final String USERNAME = "333a833c-fe0a-4f10-af9e-739f368ff725";
    private static final String REST_API_VERSION = "2018-02-16";
@@ -42,12 +43,12 @@ public class WatsonAssistantBot
       MessageOptions options;
       if (context.isPresent() && input.isPresent())
       {
-         options = new MessageOptions.Builder("e9fc9a95-fbfb-4210-b8e8-bd40cb3bebe2").input(input.get())
+         options = new MessageOptions.Builder(WORKSPACE_ID).input(input.get())
                .context(context.get()).build();
       }
       else
       {
-         options = new MessageOptions.Builder("e9fc9a95-fbfb-4210-b8e8-bd40cb3bebe2").build();
+         options = new MessageOptions.Builder(WORKSPACE_ID).build();
       }
 
       MessageResponse resp = this.servissimo.message(options).execute();
