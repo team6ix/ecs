@@ -1,6 +1,5 @@
 package com.ibm.coc.godsplan.rest;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Optional;
 import javax.servlet.ServletException;
@@ -10,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.ibm.coc.godsplan.assistant.WatsonAssistantBot;
 import com.ibm.watson.developer_cloud.assistant.v1.model.InputData;
-import com.twilio.Twilio;
 import com.twilio.twiml.MessagingResponse;
 import com.twilio.twiml.messaging.Body;
 import com.twilio.twiml.messaging.Message;
@@ -32,24 +30,39 @@ public class MessageApi extends HttpServlet
    @Override
    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
    {
+	  logger.trace("POST request: {}", request);
+      Optional<String> userInput = parseUserInput(request);
+      String watsonResponse = queryWatson(userInput);
+      String twiml = generateTwiml(watsonResponse);
+      sendTwimlResponse(response, twiml);
+   }
 
-      Optional<String> textBody = Optional.ofNullable(request.getParameter("Body"));
-      Optional<String> textPhoneNumber = Optional.ofNullable(request.getParameter("From"));
-      
-      logger.info("Text body: " + textBody);
-      logger.info("Text number: " + textPhoneNumber);
+private void sendTwimlResponse(HttpServletResponse response, String twiml) throws IOException {
+	response.setContentType("application/xml");
+      response.getWriter().write(twiml);
+}
 
-      WatsonAssistantBot watsonAssistant = new WatsonAssistantBot();
-      InputData input = new InputData.Builder(textBody.get()).build();
-      String watsonResponse = watsonAssistant.sendAssistantMessage(Optional.empty(), Optional.of(input));
-
-      response.setContentType("application/xml");
-      Body body = new Body.Builder(watsonResponse).build();
+private String generateTwiml(String watsonResponse) {
+	Body body = new Body.Builder(watsonResponse).build();
       Message sms = new Message.Builder().body(body).build();
       MessagingResponse twiml = new MessagingResponse.Builder().message(sms).build();
+      return twiml.toXml();
+}
 
-      response.getWriter().write(twiml.toXml());
-   }
+private String queryWatson(Optional<String> userInput) {
+	WatsonAssistantBot watsonAssistant = new WatsonAssistantBot();
+      InputData input = new InputData.Builder(userInput.get()).build();
+      String watsonResponse = watsonAssistant.sendAssistantMessage(Optional.empty(), Optional.of(input));
+	return watsonResponse;
+}
+
+private Optional<String> parseUserInput(HttpServletRequest request) {
+	Optional<String> textBody = Optional.ofNullable(request.getParameter("Body"));
+      Optional<String> textPhoneNumber = Optional.ofNullable(request.getParameter("From"));
+      logger.info("Text body: " + textBody);
+      logger.info("Text number: " + textPhoneNumber);
+	return textBody;
+}
 
    /**
     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
