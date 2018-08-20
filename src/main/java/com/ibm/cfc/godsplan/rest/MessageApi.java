@@ -35,15 +35,23 @@ public class MessageApi extends HttpServlet
    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException
    {
       logger.trace("POST request: {}", request);
-      CloudantPersistence metadata = new CloudantPersistence();
-      WatsonAssistantBot bot = new WatsonAssistantBot();
+      try
+      {
+         CloudantPersistence metadata = new CloudantPersistence();
+         WatsonAssistantBot bot = new WatsonAssistantBot();
 
-      Optional<String> smsTxtBody = parseUserInput(request);
-      Optional<String> smsPhoneNumber = parsePhoneNumber(request);
-      validateInput(smsTxtBody, smsPhoneNumber);
-      String watsonResponse = queryWatson(bot, smsTxtBody.get(), smsPhoneNumber.get(), metadata);
-      String twiml = generateTwiml(watsonResponse);
-      sendTwimlResponse(response, twiml);
+         Optional<String> smsTxtBody = parseUserInput(request);
+         Optional<String> smsPhoneNumber = parsePhoneNumber(request);
+         validateInput(smsTxtBody, smsPhoneNumber);
+         String watsonResponse = queryWatson(bot, smsTxtBody.get(), smsPhoneNumber.get(), metadata);
+         String twiml = generateTwiml(watsonResponse);
+         sendTwimlResponse(response, twiml);
+      }
+      catch (Exception e)
+      {
+         logger.error("Uncaught Exception", e);
+         throw e;
+      }
    }
 
    private void validateInput(Optional<String> smsTxtBody, Optional<String> smsPhoneNumber) throws IOException
