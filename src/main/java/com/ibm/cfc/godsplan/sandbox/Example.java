@@ -1,10 +1,12 @@
 package com.ibm.cfc.godsplan.sandbox;
 
+import java.io.IOException;
 import java.util.Optional;
+import com.google.maps.errors.ApiException;
+import com.google.maps.model.GeocodingResult;
 import com.ibm.cfc.godsplan.assistant.WatsonAssistantBot;
+import com.ibm.cfc.godsplan.maps.LocationMapper;
 import com.twilio.Twilio;
-import com.twilio.rest.api.v2010.account.Message;
-import com.twilio.type.PhoneNumber;
 
 public class Example
 {
@@ -14,16 +16,27 @@ public class Example
    public static final String CLIENT_PHONE_NUMBER = "+14162093379";
    public static final String SERVER_PHONE_NUMBER = "+16476973928";
 
-   public static void main(String[] args)
+   public static void main(String[] args) throws ApiException, InterruptedException, IOException
    {
       Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
 
       WatsonAssistantBot watson = new WatsonAssistantBot();
       String resp = watson.sendAssistantMessage(Optional.empty(), Optional.empty());
 
-      Message message = Message
-            .creator(new PhoneNumber(CLIENT_PHONE_NUMBER), new PhoneNumber(SERVER_PHONE_NUMBER), resp).create();
+      // Message message = Message
+      // .creator(new PhoneNumber(CLIENT_PHONE_NUMBER), new
+      // PhoneNumber(SERVER_PHONE_NUMBER), resp).create();
+      //
+      // System.out.println(message.getSid());
 
-      System.out.println(message.getSid());
+      String address = "8200 Warden Ave,Unionville,ON";
+      LocationMapper mapper = new LocationMapper();
+      GeocodingResult[] result = mapper.getGeocodingResults(address);
+
+      System.out.println(result[0].addressComponents);
+
+      String coords = mapper.getGeocodingCoordinates(address);
+
+      mapper.getGoogleImage(coords, "600x800");
    }
 }
