@@ -72,8 +72,8 @@ public class MessageApi extends HttpServlet
    {
       Optional<String> textBody = Optional.ofNullable(request.getParameter("Body"));
       Optional<String> textPhoneNumber = Optional.ofNullable(request.getParameter("From"));
-      logger.info("Text body: " + textBody);
-      logger.info("Text number: " + textPhoneNumber);
+      logger.info("Text body: '{}'", textBody);
+      logger.info("Text number: '{}'", textPhoneNumber);
       return textBody;
    }
 
