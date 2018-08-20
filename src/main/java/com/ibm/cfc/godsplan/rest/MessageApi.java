@@ -90,11 +90,11 @@ public class MessageApi extends HttpServlet
       return twiml.toXml();
    }
 
-   private String queryWatson(String watsonQuery, String smsPhoneNumber, CloudantPersistence metadata)
+   private String queryWatson(String userInputBody, String userPhoneNumber, CloudantPersistence metadata)
    {
       WatsonAssistantBot bot = new WatsonAssistantBot();
-      InputData input = new InputData.Builder(watsonQuery).build();
-      Optional<ChatContext> chatContext = metadata.retrieveChatContext(smsPhoneNumber);
+      InputData input = new InputData.Builder(userInputBody).build();
+      Optional<ChatContext> chatContext = metadata.retrieveChatContext(userPhoneNumber);
       Optional<Context> context;
       if (chatContext.isPresent())
       {
