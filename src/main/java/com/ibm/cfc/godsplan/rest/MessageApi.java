@@ -93,10 +93,9 @@ public class MessageApi extends HttpServlet
    private String queryWatson(String userInputBody, String userPhoneNumber, CloudantPersistence metadata)
    {
       WatsonAssistantBot bot = new WatsonAssistantBot();
-      InputData input = new InputData.Builder(userInputBody).build();
+      Optional<InputData> input = Optional.of(new InputData.Builder(userInputBody).build());
 
-      Optional<Context> context = getPersistedContext(userPhoneNumber, metadata);
-      String watsonResponse = bot.sendAssistantMessage(context, Optional.of(input));
+      String watsonResponse = bot.sendAssistantMessage(getPersistedContext(userPhoneNumber, metadata), input);
       persistContext(userPhoneNumber, bot.getLastContext(), metadata);
       return watsonResponse;
    }
