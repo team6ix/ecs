@@ -46,17 +46,21 @@ public class MessageApi extends HttpServlet
          Optional<String> smsTxtBody = parseUserInput(request);
          Optional<String> smsPhoneNumber = parsePhoneNumber(request);
          validateInput(smsTxtBody, smsPhoneNumber);
-         if (!checkDebugMode(metadata, smsTxtBody, smsPhoneNumber))
+
+         String responseMsg;
+         if (isClearMetadata(smsTxtBody))
          {
-            String watsonResponse = queryWatson(bot, smsTxtBody.get(), smsPhoneNumber.get(), metadata);
-            String twiml = generateTwiml(watsonResponse);
-            sendTwimlResponse(response, twiml);
+            responseMsg = "Cleared persisted context";
+            clearMetadata(metadata, smsPhoneNumber);
          }
          else
          {
-            String clearResponse = "Cleared persisted context";
-            sendTwimlResponse(response, generateTwiml(clearResponse));
+            responseMsg = queryWatson(bot, smsTxtBody.get(), smsPhoneNumber.get(), metadata);
          }
+
+         String twiml = generateTwiml(responseMsg);
+         sendTwimlResponse(response, twiml);
+
          logger.info("doPost ran in {} seconds", Duration.between(startTime, Instant.now()).getSeconds());
       }
       catch (Exception e)
@@ -64,6 +68,12 @@ public class MessageApi extends HttpServlet
          logger.error("Uncaught Exception", e);
          throw e;
       }
+   }
+
+   private void clearMetadata(CloudantPersistence metadata, Optional<String> phoneNumber)
+   {
+      logger.info("Clearing context for phone number : '{}'", phoneNumber.get());
+      metadata.removeChatContext(phoneNumber.get());
    }
 
    private void validateInput(Optional<String> smsTxtBody, Optional<String> smsPhoneNumber) throws IOException
@@ -152,15 +162,9 @@ public class MessageApi extends HttpServlet
       return textBody;
    }
 
-   private boolean checkDebugMode(CloudantPersistence metadata, Optional<String> smsText, Optional<String> phoneNumber)
+   private boolean isClearMetadata(Optional<String> smsText)
    {
-      boolean isDebug = smsText.get().trim().equalsIgnoreCase("Clear");
-      if (isDebug)
-      {
-         logger.info("Clearing context for phone number : '{}'", phoneNumber.get());
-         metadata.removeChatContext(phoneNumber.get());
-      }
-      return isDebug;
+      return smsText.get().trim().equalsIgnoreCase("Clear");
    }
 
    /**
