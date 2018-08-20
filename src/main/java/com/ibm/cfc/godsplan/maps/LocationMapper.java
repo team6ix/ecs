@@ -1,4 +1,4 @@
-package com.ibm.coc.godsplan.maps;
+package com.ibm.cfc.godsplan.maps;
 
 import java.io.File;
 import java.io.FileOutputStream;

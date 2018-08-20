@@ -1,4 +1,4 @@
-package com.ibm.coc.godsplan.assistant;
+package com.ibm.cfc.godsplan.assistant;
 
 import java.io.IOException;
 import java.io.InputStream;
