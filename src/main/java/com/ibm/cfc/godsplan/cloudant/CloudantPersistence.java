@@ -46,12 +46,11 @@ public class CloudantPersistence
    {
       JsonElement contextJson = parser.parse(context.toString());
 
-      try (InputStream is = chatContextDb.find(phoneNumber);)
+      try (InputStream is = chatContextDb.find(phoneNumber))
       {
          JsonObject json = composeExistingDocument(is);
          json.add("context", contextJson);
          chatContextDb.update(json);
-
       }
       catch (NoDocumentException e)
       {
