@@ -1,4 +1,4 @@
-package com.ibm.cfc.godsplan.assistant;
+package com.ibm.cfc.godsplan.cloudant.model;
 
 import java.util.Optional;
 

@@ -1,4 +1,4 @@
-package com.ibm.cfc.godsplan.assistant;
+package com.ibm.cfc.godsplan.cloudant.model;
 
 import com.ibm.watson.developer_cloud.assistant.v1.model.Context;
 

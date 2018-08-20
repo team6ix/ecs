@@ -1,4 +1,4 @@
-package com.ibm.cfc.godsplan.assistant;
+package com.ibm.cfc.godsplan.cloudant;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +12,7 @@ import com.cloudant.client.org.lightcouch.NoDocumentException;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.ibm.cfc.godsplan.cloudant.model.ChatContext;
 import com.ibm.watson.developer_cloud.assistant.v1.model.Context;
 
 public class CloudantPersistence {
