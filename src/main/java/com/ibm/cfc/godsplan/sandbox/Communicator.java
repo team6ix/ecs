@@ -1,4 +1,4 @@
-package com.ibm.coc.godsplan.sandbox;
+package com.ibm.cfc.godsplan.sandbox;
 
 public class Communicator {
 

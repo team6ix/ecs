@@ -1,7 +1,7 @@
-package com.ibm.coc.godsplan.sandbox;
+package com.ibm.cfc.godsplan.sandbox;
 
 import java.util.Optional;
-import com.ibm.coc.godsplan.assistant.WatsonAssistantBot;
+import com.ibm.cfc.godsplan.assistant.WatsonAssistantBot;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;

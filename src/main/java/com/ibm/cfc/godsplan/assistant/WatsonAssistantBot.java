@@ -1,4 +1,4 @@
-package com.ibm.coc.godsplan.assistant;
+package com.ibm.cfc.godsplan.assistant;
 
 import java.util.Optional;
 import com.ibm.watson.developer_cloud.assistant.v1.Assistant;

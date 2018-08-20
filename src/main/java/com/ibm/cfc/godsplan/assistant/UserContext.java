@@ -1,4 +1,4 @@
-package com.ibm.coc.godsplan.assistant;
+package com.ibm.cfc.godsplan.assistant;
 
 /**
  * POJO for usercontext database documents
