@@ -60,10 +60,10 @@ public class MessageApi extends HttpServlet
       return twiml.toXml();
    }
 
-   private String queryWatson(Optional<String> userInput)
+   private String queryWatson(Optional<String> watsonQuery)
    {
       WatsonAssistantBot bot = new WatsonAssistantBot();
-      InputData input = new InputData.Builder(userInput.get()).build();
+      InputData input = new InputData.Builder(watsonQuery.get()).build();
       String watsonResponse = bot.sendAssistantMessage(Optional.empty(), Optional.of(input));
       return watsonResponse;
    }
