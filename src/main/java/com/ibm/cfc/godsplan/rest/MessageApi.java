@@ -47,17 +47,7 @@ public class MessageApi extends HttpServlet
          Optional<String> smsPhoneNumber = parsePhoneNumber(request);
          validateInput(smsTxtBody, smsPhoneNumber);
 
-         String responseMsg;
-         if (isClearMetadata(smsTxtBody))
-         {
-            responseMsg = "Cleared persisted context";
-            clearMetadata(metadata, smsPhoneNumber);
-         }
-         else
-         {
-            responseMsg = queryWatson(bot, smsTxtBody.get(), smsPhoneNumber.get(), metadata);
-         }
-
+         String responseMsg = processQuery(metadata, bot, smsTxtBody, smsPhoneNumber);
          String twiml = generateTwiml(responseMsg);
          sendTwimlResponse(response, twiml);
 
@@ -68,6 +58,22 @@ public class MessageApi extends HttpServlet
          logger.error("Uncaught Exception", e);
          throw e;
       }
+   }
+
+   private String processQuery(CloudantPersistence metadata, WatsonAssistantBot bot, Optional<String> smsTxtBody,
+         Optional<String> smsPhoneNumber)
+   {
+      String responseMsg;
+      if (isClearMetadata(smsTxtBody))
+      {
+         responseMsg = "Cleared persisted context";
+         clearMetadata(metadata, smsPhoneNumber);
+      }
+      else
+      {
+         responseMsg = queryWatson(bot, smsTxtBody.get(), smsPhoneNumber.get(), metadata);
+      }
+      return responseMsg;
    }
 
    private void clearMetadata(CloudantPersistence metadata, Optional<String> phoneNumber)
