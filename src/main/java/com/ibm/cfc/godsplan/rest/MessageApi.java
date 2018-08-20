@@ -1,6 +1,8 @@
 package com.ibm.cfc.godsplan.rest;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Optional;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -37,6 +39,7 @@ public class MessageApi extends HttpServlet
       logger.trace("POST request: {}", request);
       try
       {
+         Instant startTime = Instant.now();
          CloudantPersistence metadata = new CloudantPersistence();
          WatsonAssistantBot bot = new WatsonAssistantBot();
 
@@ -46,6 +49,7 @@ public class MessageApi extends HttpServlet
          String watsonResponse = queryWatson(bot, smsTxtBody.get(), smsPhoneNumber.get(), metadata);
          String twiml = generateTwiml(watsonResponse);
          sendTwimlResponse(response, twiml);
+         logger.info("doPost ran in {} seconds", Duration.between(startTime, Instant.now()).getSeconds());
       }
       catch (Exception e)
       {
