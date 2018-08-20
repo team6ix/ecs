@@ -47,7 +47,7 @@ public class MessageApi extends HttpServlet
          Optional<String> smsPhoneNumber = parsePhoneNumber(request);
          validateInput(smsTxtBody, smsPhoneNumber);
 
-         String responseMsg = processQuery(metadata, bot, smsTxtBody, smsPhoneNumber);
+         String responseMsg = processQuery(metadata, bot, smsTxtBody.get(), smsPhoneNumber.get());
          String twiml = generateTwiml(responseMsg);
          sendTwimlResponse(response, twiml);
 
@@ -60,8 +60,8 @@ public class MessageApi extends HttpServlet
       }
    }
 
-   private String processQuery(CloudantPersistence metadata, WatsonAssistantBot bot, Optional<String> smsTxtBody,
-         Optional<String> smsPhoneNumber)
+   private String processQuery(CloudantPersistence metadata, WatsonAssistantBot bot, String smsTxtBody,
+         String smsPhoneNumber)
    {
       String responseMsg;
       if (isClearMetadata(smsTxtBody))
@@ -71,15 +71,15 @@ public class MessageApi extends HttpServlet
       }
       else
       {
-         responseMsg = queryWatson(bot, smsTxtBody.get(), smsPhoneNumber.get(), metadata);
+         responseMsg = queryWatson(bot, smsTxtBody, smsPhoneNumber, metadata);
       }
       return responseMsg;
    }
 
-   private void clearMetadata(CloudantPersistence metadata, Optional<String> phoneNumber)
+   private void clearMetadata(CloudantPersistence metadata, String phoneNumber)
    {
-      logger.info("Clearing context for phone number : '{}'", phoneNumber.get());
-      metadata.removeChatContext(phoneNumber.get());
+      logger.info("Clearing context for phone number : '{}'", phoneNumber);
+      metadata.removeChatContext(phoneNumber);
    }
 
    private void validateInput(Optional<String> smsTxtBody, Optional<String> smsPhoneNumber) throws IOException
@@ -168,9 +168,9 @@ public class MessageApi extends HttpServlet
       return textBody;
    }
 
-   private boolean isClearMetadata(Optional<String> smsText)
+   private boolean isClearMetadata(String smsText)
    {
-      return smsText.get().trim().equalsIgnoreCase("Clear");
+      return smsText.trim().equalsIgnoreCase("Clear");
    }
 
    /**
