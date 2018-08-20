@@ -66,8 +66,8 @@ public class MessageApi extends HttpServlet
       String responseMsg;
       if (isClearMetadata(smsTxtBody))
       {
-         responseMsg = "Cleared persisted context";
          clearMetadata(metadata, smsPhoneNumber);
+         responseMsg = "Cleared persisted context";
       }
       else
       {
