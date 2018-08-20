@@ -1,6 +1,8 @@
 package com.ibm.cfc.godsplan.assistant;
 
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.ibm.watson.developer_cloud.assistant.v1.Assistant;
 import com.ibm.watson.developer_cloud.assistant.v1.model.Context;
 import com.ibm.watson.developer_cloud.assistant.v1.model.InputData;
@@ -20,6 +22,7 @@ public class WatsonAssistantBot
    private static final String REST_API_VERSION = "2018-02-16";
    private final Assistant servissimo;
    private Optional<MessageResponse> lastResponse;
+   protected static final Logger logger = LoggerFactory.getLogger(WatsonAssistantBot.class);
 
    /**
     * zero argument constructor
@@ -43,6 +46,7 @@ public class WatsonAssistantBot
       MessageOptions options = buildOptions(context, input);
       MessageResponse resp = this.servissimo.message(options).execute();
       lastResponse = Optional.ofNullable(resp);
+      logger.info("Input '{}', response from Watson '{}'", input, lastResponse);
       return getResponseText(resp);
    }
 
