@@ -10,6 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.ibm.cfc.godsplan.assistant.WatsonAssistantBot;
+import com.ibm.cfc.godsplan.cloudant.CloudantPersistence;
+import com.ibm.cfc.godsplan.cloudant.model.ChatContext;
+import com.ibm.watson.developer_cloud.assistant.v1.model.Context;
 import com.ibm.watson.developer_cloud.assistant.v1.model.InputData;
 import com.twilio.twiml.MessagingResponse;
 import com.twilio.twiml.messaging.Body;
@@ -32,10 +35,36 @@ public class MessageApi extends HttpServlet
    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException
    {
       logger.trace("POST request: {}", request);
+      CloudantPersistence metadata = new CloudantPersistence();
       Optional<String> smsTxtBody = parseUserInput(request);
-      String watsonResponse = queryWatson(smsTxtBody);
+      Optional<String> smsPhoneNumber = parsePhoneNumber(request);
+      validateInput(smsTxtBody, smsPhoneNumber);
+      String watsonResponse = queryWatson(smsTxtBody.get(), smsPhoneNumber.get(), metadata);
       String twiml = generateTwiml(watsonResponse);
       sendTwimlResponse(response, twiml);
+   }
+
+   private void validateInput(Optional<String> smsTxtBody, Optional<String> smsPhoneNumber) throws IOException
+   {
+      if (!smsTxtBody.isPresent() || !smsPhoneNumber.isPresent())
+      {
+         if (!smsTxtBody.isPresent())
+         {
+            logger.error("smsTxtBody not present");
+         }
+         if (!smsPhoneNumber.isPresent())
+         {
+            logger.error("smsPhoneNumber not present");
+         }
+         throw new IOException("failed to parse sms body or sms phone number.");
+      }
+   }
+
+   private Optional<String> parsePhoneNumber(HttpServletRequest request)
+   {
+      Optional<String> textPhoneNumber = Optional.ofNullable(request.getParameter("From"));
+      logger.info("Text number: '{}'", textPhoneNumber);
+      return textPhoneNumber;
    }
 
    private void sendTwimlResponse(HttpServletResponse response, String twiml) throws IOException
@@ -60,20 +89,27 @@ public class MessageApi extends HttpServlet
       return twiml.toXml();
    }
 
-   private String queryWatson(Optional<String> watsonQuery)
+   private String queryWatson(String watsonQuery, String smsPhoneNumber, CloudantPersistence metadata)
    {
       WatsonAssistantBot bot = new WatsonAssistantBot();
-      InputData input = new InputData.Builder(watsonQuery.get()).build();
-      String watsonResponse = bot.sendAssistantMessage(Optional.empty(), Optional.of(input));
-      return watsonResponse;
+      InputData input = new InputData.Builder(watsonQuery).build();
+      Optional<ChatContext> chatContext = metadata.retrieveChatContext(smsPhoneNumber);
+      Optional<Context> context;
+      if (chatContext.isPresent())
+      {
+         context = Optional.ofNullable(chatContext.get().getWatsonContext());
+      }
+      else
+      {
+         context = Optional.empty();
+      }
+      return bot.sendAssistantMessage(context, Optional.of(input));
    }
 
    private Optional<String> parseUserInput(HttpServletRequest request)
    {
       Optional<String> textBody = Optional.ofNullable(request.getParameter("Body"));
-      Optional<String> textPhoneNumber = Optional.ofNullable(request.getParameter("From"));
       logger.info("Text body: '{}'", textBody);
-      logger.info("Text number: '{}'", textPhoneNumber);
       return textBody;
    }
 
