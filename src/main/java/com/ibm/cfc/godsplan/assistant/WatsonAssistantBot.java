@@ -62,7 +62,7 @@ public class WatsonAssistantBot
       {
          msgBuilder = msgBuilder.context(context.get());
       }
-      if (input.isPresent())
+      if (input.isPresent() && context.isPresent())
       {
          msgBuilder = msgBuilder.input(input.get());
       }
