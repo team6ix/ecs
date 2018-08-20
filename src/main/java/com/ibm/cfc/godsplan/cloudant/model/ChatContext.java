@@ -6,22 +6,26 @@ import com.ibm.watson.developer_cloud.assistant.v1.model.Context;
  * POJO for chatcontext database documents
  *
  */
-public class ChatContext {
+public class ChatContext
+{
 
-	private Context context;
-	private String _id;
-	
-	public ChatContext(Context watsonContext, String phoneNumber) {
-		super();
-		this.context = watsonContext;
-		this._id = phoneNumber;
-	}
+   private final Context context;
+   private final String _id;
 
-	public Context getWatsonContext() {
-		return context;
-	}
+   public ChatContext(Context watsonContext, String phoneNumber)
+   {
+      super();
+      this.context = watsonContext;
+      this._id = phoneNumber;
+   }
 
-	public String getPhoneNumber() {
-		return _id;
-	}	
+   public Context getWatsonContext()
+   {
+      return context;
+   }
+
+   public String getPhoneNumber()
+   {
+      return _id;
+   }
 }
