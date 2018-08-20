@@ -36,11 +36,12 @@ public class MessageApi extends HttpServlet
    {
       logger.trace("POST request: {}", request);
       CloudantPersistence metadata = new CloudantPersistence();
+      WatsonAssistantBot bot = new WatsonAssistantBot();
 
       Optional<String> smsTxtBody = parseUserInput(request);
       Optional<String> smsPhoneNumber = parsePhoneNumber(request);
       validateInput(smsTxtBody, smsPhoneNumber);
-      String watsonResponse = queryWatson(smsTxtBody.get(), smsPhoneNumber.get(), metadata);
+      String watsonResponse = queryWatson(bot, smsTxtBody.get(), smsPhoneNumber.get(), metadata);
       String twiml = generateTwiml(watsonResponse);
       sendTwimlResponse(response, twiml);
    }
@@ -90,9 +91,9 @@ public class MessageApi extends HttpServlet
       return twiml.toXml();
    }
 
-   private String queryWatson(String userInputBody, String userPhoneNumber, CloudantPersistence metadata)
+   private String queryWatson(WatsonAssistantBot bot, String userInputBody, String userPhoneNumber,
+         CloudantPersistence metadata)
    {
-      WatsonAssistantBot bot = new WatsonAssistantBot();
       Optional<InputData> input = Optional.of(new InputData.Builder(userInputBody).build());
       Optional<Context> context = getPersistedContext(userPhoneNumber, metadata);
 
