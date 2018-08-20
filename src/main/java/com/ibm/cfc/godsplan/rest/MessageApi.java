@@ -36,6 +36,7 @@ public class MessageApi extends HttpServlet
    {
       logger.trace("POST request: {}", request);
       CloudantPersistence metadata = new CloudantPersistence();
+
       Optional<String> smsTxtBody = parseUserInput(request);
       Optional<String> smsPhoneNumber = parsePhoneNumber(request);
       validateInput(smsTxtBody, smsPhoneNumber);
