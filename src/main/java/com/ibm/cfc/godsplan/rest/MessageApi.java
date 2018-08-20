@@ -46,7 +46,7 @@ public class MessageApi extends HttpServlet
          Optional<String> smsTxtBody = parseUserInput(request);
          Optional<String> smsPhoneNumber = parsePhoneNumber(request);
          validateInput(smsTxtBody, smsPhoneNumber);
-         if (checkDebugMode(metadata, smsTxtBody, smsPhoneNumber))
+         if (!checkDebugMode(metadata, smsTxtBody, smsPhoneNumber))
          {
             String watsonResponse = queryWatson(bot, smsTxtBody.get(), smsPhoneNumber.get(), metadata);
             String twiml = generateTwiml(watsonResponse);
