@@ -43,10 +43,11 @@ public class WatsonAssistantBot
     */
    public String sendAssistantMessage(Optional<Context> context, Optional<InputData> input)
    {
+      logger.info("Querying Watson with input '{}'", input);
       MessageOptions options = buildOptions(context, input);
       MessageResponse resp = this.servissimo.message(options).execute();
       lastResponse = Optional.ofNullable(resp);
-      logger.info("Input '{}', response from Watson '{}'", input, lastResponse);
+      logger.trace("Watson assistant response: '{}'", resp);
       return getResponseText(resp);
    }
 
