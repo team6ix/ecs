@@ -95,6 +95,12 @@ public class MessageApi extends HttpServlet
       WatsonAssistantBot bot = new WatsonAssistantBot();
       InputData input = new InputData.Builder(userInputBody).build();
       Optional<ChatContext> chatContext = metadata.retrieveChatContext(userPhoneNumber);
+      Optional<Context> context = getContextFromChatContext(chatContext);
+      return bot.sendAssistantMessage(context, Optional.of(input));
+   }
+
+   private Optional<Context> getContextFromChatContext(Optional<ChatContext> chatContext)
+   {
       Optional<Context> context;
       if (chatContext.isPresent())
       {
@@ -104,7 +110,7 @@ public class MessageApi extends HttpServlet
       {
          context = Optional.empty();
       }
-      return bot.sendAssistantMessage(context, Optional.of(input));
+      return context;
    }
 
    private Optional<String> parseUserInput(HttpServletRequest request)
