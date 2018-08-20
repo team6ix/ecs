@@ -32,8 +32,8 @@ public class MessageApi extends HttpServlet
    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException
    {
       logger.trace("POST request: {}", request);
-      Optional<String> userInput = parseUserInput(request);
-      String watsonResponse = queryWatson(userInput);
+      Optional<String> smsTxtBody = parseUserInput(request);
+      String watsonResponse = queryWatson(smsTxtBody);
       String twiml = generateTwiml(watsonResponse);
       sendTwimlResponse(response, twiml);
    }
@@ -52,19 +52,19 @@ public class MessageApi extends HttpServlet
       }
    }
 
-   private String generateTwiml(String watsonResponse)
+   private String generateTwiml(String input)
    {
-      Body body = new Body.Builder(watsonResponse).build();
-      Message sms = new Message.Builder().body(body).build();
-      MessagingResponse twiml = new MessagingResponse.Builder().message(sms).build();
+      Body body = new Body.Builder(input).build();
+      Message msg = new Message.Builder().body(body).build();
+      MessagingResponse twiml = new MessagingResponse.Builder().message(msg).build();
       return twiml.toXml();
    }
 
    private String queryWatson(Optional<String> userInput)
    {
-      WatsonAssistantBot watsonAssistant = new WatsonAssistantBot();
+      WatsonAssistantBot bot = new WatsonAssistantBot();
       InputData input = new InputData.Builder(userInput.get()).build();
-      String watsonResponse = watsonAssistant.sendAssistantMessage(Optional.empty(), Optional.of(input));
+      String watsonResponse = bot.sendAssistantMessage(Optional.empty(), Optional.of(input));
       return watsonResponse;
    }
 
