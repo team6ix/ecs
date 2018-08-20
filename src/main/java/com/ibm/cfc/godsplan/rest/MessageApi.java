@@ -46,10 +46,17 @@ public class MessageApi extends HttpServlet
          Optional<String> smsTxtBody = parseUserInput(request);
          Optional<String> smsPhoneNumber = parsePhoneNumber(request);
          validateInput(smsTxtBody, smsPhoneNumber);
-         checkDebugMode(metadata, smsTxtBody, smsPhoneNumber);
-         String watsonResponse = queryWatson(bot, smsTxtBody.get(), smsPhoneNumber.get(), metadata);
-         String twiml = generateTwiml(watsonResponse);
-         sendTwimlResponse(response, twiml);
+         if (checkDebugMode(metadata, smsTxtBody, smsPhoneNumber))
+         {
+            String watsonResponse = queryWatson(bot, smsTxtBody.get(), smsPhoneNumber.get(), metadata);
+            String twiml = generateTwiml(watsonResponse);
+            sendTwimlResponse(response, twiml);
+         }
+         else
+         {
+            String clearResponse = "Cleared persisted context";
+            sendTwimlResponse(response, generateTwiml(clearResponse));
+         }
          logger.info("doPost ran in {} seconds", Duration.between(startTime, Instant.now()).getSeconds());
       }
       catch (Exception e)
@@ -144,14 +151,16 @@ public class MessageApi extends HttpServlet
       logger.info("Text body: '{}'", textBody);
       return textBody;
    }
-   
-   private void checkDebugMode(CloudantPersistence metadata, Optional<String> smsText,  Optional<String> phoneNumber)
+
+   private boolean checkDebugMode(CloudantPersistence metadata, Optional<String> smsText, Optional<String> phoneNumber)
    {
-      if(smsText.get().trim().equalsIgnoreCase("Clear"))
+      boolean isDebug = smsText.get().trim().equalsIgnoreCase("Clear");
+      if (isDebug)
       {
          logger.info("Clearing context for phone number : '{}'", phoneNumber.get());
          metadata.removeChatContext(phoneNumber.get());
       }
+      return isDebug;
    }
 
    /**
