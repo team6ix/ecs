@@ -94,19 +94,20 @@ public class MessageApi extends HttpServlet
    {
       WatsonAssistantBot bot = new WatsonAssistantBot();
       InputData input = new InputData.Builder(userInputBody).build();
-      Optional<ChatContext> chatContext = metadata.retrieveChatContext(userPhoneNumber);
-      Optional<Context> context = getContextFromChatContext(chatContext);
+
+      Optional<Context> context = getPersistedContext(userPhoneNumber, metadata);
       String watsonResposne = bot.sendAssistantMessage(context, Optional.of(input));
       Optional<Context> responseContext = bot.getLastContext();
       if (responseContext.isPresent())
       {
-         metadata.persistChatContext(userPhoneNumber, bot.getLastContext().get());
+         metadata.persistChatContext(userPhoneNumber, responseContext.get());
       }
       return watsonResposne;
    }
 
-   private Optional<Context> getContextFromChatContext(Optional<ChatContext> chatContext)
+   private Optional<Context> getPersistedContext(String phoneNumber, CloudantPersistence metadata)
    {
+      Optional<ChatContext> chatContext = metadata.retrieveChatContext(phoneNumber);
       Optional<Context> context;
       if (chatContext.isPresent())
       {
