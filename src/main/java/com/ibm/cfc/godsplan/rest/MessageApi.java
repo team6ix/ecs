@@ -96,13 +96,17 @@ public class MessageApi extends HttpServlet
       InputData input = new InputData.Builder(userInputBody).build();
 
       Optional<Context> context = getPersistedContext(userPhoneNumber, metadata);
-      String watsonResposne = bot.sendAssistantMessage(context, Optional.of(input));
-      Optional<Context> responseContext = bot.getLastContext();
+      String watsonResponse = bot.sendAssistantMessage(context, Optional.of(input));
+      persistContext(userPhoneNumber, bot.getLastContext(), metadata);
+      return watsonResponse;
+   }
+
+   private void persistContext(String userPhoneNumber, Optional<Context> responseContext, CloudantPersistence metadata)
+   {
       if (responseContext.isPresent())
       {
          metadata.persistChatContext(userPhoneNumber, responseContext.get());
       }
-      return watsonResposne;
    }
 
    private Optional<Context> getPersistedContext(String phoneNumber, CloudantPersistence metadata)
