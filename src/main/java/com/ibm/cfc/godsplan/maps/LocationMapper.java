@@ -26,7 +26,7 @@ import com.ibm.cfc.godsplan.maps.model.GoogleAddressInformation;
 public class LocationMapper
 {
    private static final String IMAGESIZE_DEFAULT = "800x600";
-   private final String key = System.getProperty("googlekey");
+   private final String key = System.getenv("googlekey");
    private final GeoApiContext context;
    // address, size, apikey | request centers a map and places a red pin at
    // specified locations, and creates a snapshot of specified size
