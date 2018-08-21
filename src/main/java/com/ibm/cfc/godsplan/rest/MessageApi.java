@@ -161,7 +161,7 @@ public class MessageApi extends HttpServlet
       return new QueryResponse(watsonResponse, mediaURI);
    }
 
-   private Optional<String> getAddressContent(String smsTxtBody, String userPhoneNumber, CloudantPersistence metadata,
+   private Optional<String> getAddressContent(String rawAddress, String userPhoneNumber, CloudantPersistence metadata,
          Optional<Context> persistedContext)
    {
       Optional<String> mediaURI = Optional.empty();
@@ -170,7 +170,7 @@ public class MessageApi extends HttpServlet
          Context context = persistedContext.get();
          if (isAddressResponse(context))
          {
-            List<GoogleAddressInformation> addressInfo = getAddressDetail(smsTxtBody);
+            List<GoogleAddressInformation> addressInfo = getAddressDetail(rawAddress);
             if (addressInfo.size() == 1)
             {
                String formattedAddress = addressInfo.get(0).getFormattedAddress();
