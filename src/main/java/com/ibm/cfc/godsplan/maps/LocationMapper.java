@@ -148,7 +148,7 @@ public class LocationMapper
          address = address.replaceAll("\"", "");
       }
 
-      return MessageFormat.format(URL_GMAP_API, address, size, key);
+      return MessageFormat.format(URL_GMAP_API, address, size, key).replaceAll(" ", "%20");
    }
 
    private void writeEntityToFile(String fullPath, HttpEntity entity) throws IOException

@@ -45,9 +45,8 @@ public class Example
       mapper.getGoogleImage(coords, "600x800", image);
       System.out.println("Map of '" + rawAddress + "' can be found at '" + image.getAbsolutePath() + "'");
 
-      String imageURI = mapper.getGoogleImageURI(addresses.get(0).getFormattedAddress());
-      imageURI = imageURI.replaceAll(" ", "%20");
-      String body = "Here is a map of your location";
+      //      String imageURI = mapper.getGoogleImageURI(addresses.get(0).getFormattedAddress());
+      //      String body = "Here is a map of your location";
       //      Message.creator(new PhoneNumber(CLIENT_PHONE_NUMBER), new PhoneNumber(SERVER_PHONE_NUMBER), body)
       //            .setMediaUrl(Promoter.listOfOne(URI.create(imageURI))).create();
 
