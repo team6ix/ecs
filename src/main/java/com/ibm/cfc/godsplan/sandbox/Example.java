@@ -1,11 +1,13 @@
 package com.ibm.cfc.godsplan.sandbox;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import com.google.maps.errors.ApiException;
-import com.google.maps.model.GeocodingResult;
 import com.ibm.cfc.godsplan.assistant.WatsonAssistantBot;
 import com.ibm.cfc.godsplan.maps.LocationMapper;
+import com.ibm.cfc.godsplan.maps.model.GoogleAddressInformation;
 import com.twilio.Twilio;
 
 public class Example
@@ -29,14 +31,17 @@ public class Example
       //
       // System.out.println(message.getSid());
 
-      String address = "8200 Warden Ave,Unionville,ON";
+      String rawAddress = "8200 Warden Ave";
       LocationMapper mapper = new LocationMapper();
-      GeocodingResult[] result = mapper.getGeocodingResults(address);
+      List<GoogleAddressInformation> addresses = mapper.getFormattedAddress(rawAddress);
+      for (GoogleAddressInformation address : addresses)
+      {
+         System.out.println(address);
+      }
 
-      System.out.println(result[0].formattedAddress);
-
-      String coords = mapper.getGeocodingCoordinates(address);
-
-      mapper.getGoogleImage(coords, "600x800");
+      String coords = mapper.getGeocodingCoordinates(rawAddress);
+      File image = File.createTempFile("map_", ".png");
+      mapper.getGoogleImage(coords, "600x800", image);
+      System.out.println("Map of '" + rawAddress + "' can be found at '" + image.getAbsolutePath() + "'");
    }
 }
