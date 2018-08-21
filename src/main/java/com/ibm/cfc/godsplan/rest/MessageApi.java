@@ -121,11 +121,6 @@ public class MessageApi extends HttpServlet
       }
    }
 
-   private String generateTwiml(String input)
-   {
-      return generateTwiml(input, Optional.empty());
-   }
-
    private String generateTwiml(String input, Optional<String> mediaURI)
    {
       Body body = new Body.Builder(input).build();

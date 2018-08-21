@@ -15,23 +15,23 @@ import java.util.Optional;
 
 public class QueryResponse
 {
-   private Optional<String> mediaURI;
+   private final Optional<String> mediaURI;
    private final String response;
 
    public QueryResponse(String response)
    {
-      super();
+      this(response, Optional.empty());
+   }
+
+   public QueryResponse(String response, Optional<String> mediaURI)
+   {
       this.response = response;
+      this.mediaURI = mediaURI;
    }
 
    public Optional<String> getMediaURI()
    {
       return mediaURI;
-   }
-
-   public void setMediaURI(Optional<String> mediaURI)
-   {
-      this.mediaURI = mediaURI;
    }
 
    public String getResponse()
