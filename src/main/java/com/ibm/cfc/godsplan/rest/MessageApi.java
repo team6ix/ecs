@@ -18,7 +18,9 @@ import com.ibm.watson.developer_cloud.assistant.v1.model.Context;
 import com.ibm.watson.developer_cloud.assistant.v1.model.InputData;
 import com.twilio.twiml.MessagingResponse;
 import com.twilio.twiml.messaging.Body;
+import com.twilio.twiml.messaging.Media;
 import com.twilio.twiml.messaging.Message;
+import com.twilio.twiml.messaging.Message.Builder;
 
 /**
  * Servlet implementation class
@@ -47,8 +49,8 @@ public class MessageApi extends HttpServlet
          Optional<String> smsPhoneNumber = parsePhoneNumber(request);
          validateInput(smsTxtBody, smsPhoneNumber);
 
-         String responseMsg = processQuery(metadata, bot, smsTxtBody.get(), smsPhoneNumber.get());
-         String twiml = generateTwiml(responseMsg);
+         QueryResponse responseMsg = processQuery(metadata, bot, smsTxtBody.get(), smsPhoneNumber.get());
+         String twiml = generateTwiml(responseMsg.getResponse(), responseMsg.getMediaURI());
          sendTwimlResponse(response, twiml);
 
          logger.info("doPost ran in {} seconds", Duration.between(startTime, Instant.now()).getSeconds());
@@ -60,7 +62,7 @@ public class MessageApi extends HttpServlet
       }
    }
 
-   private String processQuery(CloudantPersistence metadata, WatsonAssistantBot bot, String smsTxtBody,
+   private QueryResponse processQuery(CloudantPersistence metadata, WatsonAssistantBot bot, String smsTxtBody,
          String smsPhoneNumber)
    {
       String responseMsg;
@@ -73,7 +75,7 @@ public class MessageApi extends HttpServlet
       {
          responseMsg = queryWatson(bot, smsTxtBody, smsPhoneNumber, metadata);
       }
-      return responseMsg;
+      return new QueryResponse(responseMsg);
    }
 
    private void clearMetadata(CloudantPersistence metadata, String phoneNumber)
@@ -121,8 +123,19 @@ public class MessageApi extends HttpServlet
 
    private String generateTwiml(String input)
    {
+      return generateTwiml(input, Optional.empty());
+   }
+
+   private String generateTwiml(String input, Optional<String> mediaURI)
+   {
       Body body = new Body.Builder(input).build();
-      Message msg = new Message.Builder().body(body).build();
+      Builder builder = new Message.Builder().body(body);
+      if (mediaURI.isPresent())
+      {
+         Media media = new Media.Builder(mediaURI.get()).build();
+         builder.media(media);
+      }
+      Message msg = builder.build();
       MessagingResponse twiml = new MessagingResponse.Builder().message(msg).build();
       return twiml.toXml();
    }

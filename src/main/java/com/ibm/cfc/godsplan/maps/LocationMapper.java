@@ -25,6 +25,7 @@ import com.ibm.cfc.godsplan.maps.model.GoogleAddressInformation;
 
 public class LocationMapper
 {
+   private static final String IMAGESIZE_DEFAULT = "800x600";
    private final String key = System.getProperty("googlekey");
    private final GeoApiContext context;
    // address, size, apikey | request centers a map and places a red pin at
@@ -108,18 +109,11 @@ public class LocationMapper
     */
    public void getGoogleImage(String address, String size, File file) throws ClientProtocolException, IOException
    {
-
-      // Json return gives quoted string, strip quotes
-      if (address.contains("\""))
-      {
-         address = address.replaceAll("\"", "");
-      }
+      String url = getGoogleImageURI(address);
 
       // Make HTTP GET Request to Google maps
       try (CloseableHttpClient httpclient = HttpClients.createDefault())
       {
-         String url = MessageFormat.format(URL_GMAP_API, address, size, key);
-
          HttpGet httpGet = new HttpGet(url);
          CloseableHttpResponse response1 = httpclient.execute(httpGet);
 
@@ -130,6 +124,31 @@ public class LocationMapper
 
          writeEntityToFile(file.getAbsolutePath(), response1.getEntity());
       }
+   }
+
+   /**
+    * @param address
+    * @return
+    */
+   public String getGoogleImageURI(String address)
+   {
+      return getGoogleImageURI(address, IMAGESIZE_DEFAULT);
+   }
+
+   /**
+    * @param address
+    * @param size
+    * @return
+    */
+   public String getGoogleImageURI(String address, String size)
+   {
+      // Json return gives quoted string, strip quotes
+      if (address.contains("\""))
+      {
+         address = address.replaceAll("\"", "");
+      }
+
+      return MessageFormat.format(URL_GMAP_API, address, size, key);
    }
 
    private void writeEntityToFile(String fullPath, HttpEntity entity) throws IOException
