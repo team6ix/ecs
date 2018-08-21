@@ -2,7 +2,6 @@ package com.ibm.cfc.godsplan.sandbox;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
@@ -11,9 +10,6 @@ import com.ibm.cfc.godsplan.assistant.WatsonAssistantBot;
 import com.ibm.cfc.godsplan.maps.LocationMapper;
 import com.ibm.cfc.godsplan.maps.model.GoogleAddressInformation;
 import com.twilio.Twilio;
-import com.twilio.converter.Promoter;
-import com.twilio.rest.api.v2010.account.Message;
-import com.twilio.type.PhoneNumber;
 
 public class Example
 {
@@ -28,7 +24,7 @@ public class Example
       Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
 
       WatsonAssistantBot watson = new WatsonAssistantBot();
-      String resp = watson.sendAssistantMessage(Optional.empty(), Optional.empty());
+      watson.sendAssistantMessage(Optional.empty(), Optional.empty());
 
       // Message message = Message
       // .creator(new PhoneNumber(CLIENT_PHONE_NUMBER), new
@@ -51,10 +47,9 @@ public class Example
 
       String imageURI = mapper.getGoogleImageURI(addresses.get(0).getFormattedAddress());
       imageURI = imageURI.replaceAll(" ", "%20");
-      Message message = Message
-            .creator(new PhoneNumber(CLIENT_PHONE_NUMBER), new PhoneNumber(SERVER_PHONE_NUMBER), resp)
-            .setMediaUrl(Promoter.listOfOne(URI.create(imageURI))).create();
+      String body = "Here is a map of your location";
+      //      Message.creator(new PhoneNumber(CLIENT_PHONE_NUMBER), new PhoneNumber(SERVER_PHONE_NUMBER), body)
+      //            .setMediaUrl(Promoter.listOfOne(URI.create(imageURI))).create();
 
-      System.out.println(message.getSid());
    }
 }
