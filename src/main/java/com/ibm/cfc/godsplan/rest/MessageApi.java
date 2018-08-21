@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.ibm.cfc.godsplan.assistant.WatsonAssistantBot;
 import com.ibm.cfc.godsplan.cloudant.CloudantPersistence;
 import com.ibm.cfc.godsplan.cloudant.model.ChatContext;
+import com.ibm.cfc.godsplan.maps.LocationMapper;
 import com.ibm.watson.developer_cloud.assistant.v1.model.Context;
 import com.ibm.watson.developer_cloud.assistant.v1.model.InputData;
 import com.twilio.twiml.MessagingResponse;
@@ -28,6 +29,7 @@ import com.twilio.twiml.messaging.Message.Builder;
 @WebServlet("/message")
 public class MessageApi extends HttpServlet
 {
+   private static final String NODE_ADDRESSQUERY = "node_1_1534430223721";
    private static final long serialVersionUID = 1L;
    protected static final Logger logger = LoggerFactory.getLogger(MessageApi.class);
 
@@ -49,8 +51,8 @@ public class MessageApi extends HttpServlet
          Optional<String> smsPhoneNumber = parsePhoneNumber(request);
          validateInput(smsTxtBody, smsPhoneNumber);
 
-         QueryResponse responseMsg = processQuery(metadata, bot, smsTxtBody.get(), smsPhoneNumber.get());
-         String twiml = generateTwiml(responseMsg.getResponse(), responseMsg.getMediaURI());
+         QueryResponse queryResponse = processQuery(metadata, bot, smsTxtBody.get(), smsPhoneNumber.get());
+         String twiml = generateTwiml(queryResponse.getResponse(), queryResponse.getMediaURI());
          sendTwimlResponse(response, twiml);
 
          logger.info("doPost ran in {} seconds", Duration.between(startTime, Instant.now()).getSeconds());
@@ -66,16 +68,36 @@ public class MessageApi extends HttpServlet
          String smsPhoneNumber)
    {
       String responseMsg;
+      Optional<String> mediaURI;
       if (isClearMetadata(smsTxtBody))
       {
          clearMetadata(metadata, smsPhoneNumber);
          responseMsg = "Cleared persisted context";
+         mediaURI = Optional.empty();
       }
       else
       {
-         responseMsg = queryWatson(bot, smsTxtBody, smsPhoneNumber, metadata);
+         Optional<Context> persistedContext = getPersistedContext(smsPhoneNumber, metadata);
+         responseMsg = queryWatson(bot, smsTxtBody, smsPhoneNumber, metadata, persistedContext);
+         mediaURI = getMediaURI(persistedContext, smsTxtBody);
       }
-      return new QueryResponse(responseMsg);
+      return new QueryResponse(responseMsg, mediaURI);
+   }
+
+   private Optional<String> getMediaURI(Optional<Context> persistedContext, String smsTxtBody)
+   {
+      Optional<String> media = Optional.empty();
+      if (persistedContext.isPresent())
+      {
+         Context context = persistedContext.get();
+         Object dialogStack = context.getSystem().get("dialog_stack");
+         if (dialogStack != null && dialogStack.toString().contains(NODE_ADDRESSQUERY))
+         {
+            LocationMapper mapper = new LocationMapper();
+            media = Optional.of(mapper.getGoogleImageURI(smsTxtBody));
+         }
+      }
+      return media;
    }
 
    private void clearMetadata(CloudantPersistence metadata, String phoneNumber)
@@ -136,12 +158,11 @@ public class MessageApi extends HttpServlet
    }
 
    private String queryWatson(WatsonAssistantBot bot, String userInputBody, String userPhoneNumber,
-         CloudantPersistence metadata)
+         CloudantPersistence metadata, Optional<Context> persistedContext)
    {
       Optional<InputData> input = Optional.of(new InputData.Builder(userInputBody).build());
-      Optional<Context> context = getPersistedContext(userPhoneNumber, metadata);
 
-      String watsonResponse = bot.sendAssistantMessage(context, input);
+      String watsonResponse = bot.sendAssistantMessage(persistedContext, input);
       persistContext(userPhoneNumber, bot.getLastContext(), metadata);
       return watsonResponse;
    }
