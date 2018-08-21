@@ -33,7 +33,7 @@ public class Example
       LocationMapper mapper = new LocationMapper();
       GeocodingResult[] result = mapper.getGeocodingResults(address);
 
-      System.out.println(result[0].addressComponents);
+      System.out.println(result[0].formattedAddress);
 
       String coords = mapper.getGeocodingCoordinates(address);
 
