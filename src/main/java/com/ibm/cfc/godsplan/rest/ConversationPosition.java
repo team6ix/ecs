@@ -16,11 +16,14 @@ package com.ibm.cfc.godsplan.rest;
  */
 public enum ConversationPosition
 {
-
-   /***/
-   ADDRESS("node_1_1534430223721"),
-   /***/
-   ADDRESS_CONFIRMATION("test2"),
+   /** first response */
+   REQUIRE_ASSISTANCE("Welcome"),
+   /** second response */
+   ADDRESS_INPUT("node_1_1534430223721"),
+   /** third response */
+   ADDRESS_CONFIRMATION("node_2_1534964907188"),
+   /** fourth response */
+   INJURY_CONFIRMATION("node_4_1534430386010"),
    /***/
    OTHER("");
 

@@ -149,14 +149,13 @@ public class MessageApi extends HttpServlet
       Optional<InputData> input = Optional.of(new InputData.Builder(smsTxtBody).build());
       Optional<String> mediaURI = Optional.empty();
       ConversationPosition position = getPosition(persistedContext);
-      if (position.equals(ConversationPosition.ADDRESS))
+      logger.info("Conversation position '{}' retrieved for number '{}'", position.toString(), userPhoneNumber);
+
+      if (position.equals(ConversationPosition.ADDRESS_INPUT))
       {
          mediaURI = getAddressContent(smsTxtBody, userPhoneNumber, metadata);
       }
-      else if (position.equals(ConversationPosition.ADDRESS_CONFIRMATION))
-      {
 
-      }
       String watsonResponse = bot.sendAssistantMessage(persistedContext, input);
       persistContext(userPhoneNumber, bot.getLastContext(), metadata);
       return new QueryResponse(watsonResponse, mediaURI);
