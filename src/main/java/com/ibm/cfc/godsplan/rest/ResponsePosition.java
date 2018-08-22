@@ -14,10 +14,10 @@ package com.ibm.cfc.godsplan.rest;
 /**
  * an enum to denote the important conversation positions we need to keep track of.
  */
-public enum ConversationPosition
+public enum ResponsePosition
 {
    /** first response */
-   REQUIRE_ASSISTANCE("Welcome"),
+   ASSISTANCE_CONFIRMATION("Welcome"),
    /** second response */
    ADDRESS_INPUT("node_1_1534430223721"),
    /** third response */
@@ -29,7 +29,7 @@ public enum ConversationPosition
 
    private final String nodeID;
 
-   private ConversationPosition(String watsonAssistantNodeID)
+   private ResponsePosition(String watsonAssistantNodeID)
    {
       this.nodeID = watsonAssistantNodeID;
    }
@@ -38,10 +38,10 @@ public enum ConversationPosition
     * @param nodeID
     * @return ConversationPosition that matches the nodeID
     */
-   public static ConversationPosition getPosition(String nodeID)
+   public static ResponsePosition getPosition(String nodeID)
    {
-      ConversationPosition pos = ConversationPosition.OTHER;
-      for (ConversationPosition position : ConversationPosition.values())
+      ResponsePosition pos = ResponsePosition.OTHER;
+      for (ResponsePosition position : ResponsePosition.values())
       {
          if (nodeID.contains(position.getNodeID()))
          {
@@ -53,7 +53,7 @@ public enum ConversationPosition
    }
 
    /**
-    * @return this {@link ConversationPosition} nodeID
+    * @return this {@link ResponsePosition} nodeID
     */
    public String getNodeID()
    {

@@ -148,10 +148,10 @@ public class MessageApi extends HttpServlet
    {
       Optional<InputData> input = Optional.of(new InputData.Builder(smsTxtBody).build());
       Optional<String> mediaURI = Optional.empty();
-      ConversationPosition position = getPosition(persistedContext);
+      ResponsePosition position = getPosition(persistedContext);
       logger.info("Conversation position '{}' retrieved for number '{}'", position.toString(), userPhoneNumber);
 
-      if (position.equals(ConversationPosition.ADDRESS_INPUT))
+      if (position.equals(ResponsePosition.ADDRESS_INPUT))
       {
          mediaURI = getAddressContent(smsTxtBody, userPhoneNumber, metadata);
       }
@@ -161,9 +161,9 @@ public class MessageApi extends HttpServlet
       return new QueryResponse(watsonResponse, mediaURI);
    }
 
-   private ConversationPosition getPosition(Optional<Context> persistedContext)
+   private ResponsePosition getPosition(Optional<Context> persistedContext)
    {
-      ConversationPosition pos = ConversationPosition.OTHER;
+      ResponsePosition pos = ResponsePosition.OTHER;
       if (persistedContext.isPresent())
       {
          Context context = persistedContext.get();
@@ -171,7 +171,7 @@ public class MessageApi extends HttpServlet
          if (dialogStack != null)
          {
             String nodeID = dialogStack.toString();
-            pos = ConversationPosition.getPosition(nodeID);
+            pos = ResponsePosition.getPosition(nodeID);
          }
       }
       return pos;
