@@ -150,15 +150,48 @@ public class MessageApi extends HttpServlet
       Optional<String> mediaURI = Optional.empty();
       ResponsePosition position = getPosition(persistedContext);
       logger.info("Conversation position '{}' retrieved for number '{}'", position.toString(), userPhoneNumber);
-
-      if (position.equals(ResponsePosition.ADDRESS_INPUT))
-      {
-         mediaURI = getAddressContent(smsTxtBody, userPhoneNumber, metadata);
-      }
-
       String watsonResponse = bot.sendAssistantMessage(persistedContext, input);
       persistContext(userPhoneNumber, bot.getLastContext(), metadata);
-      return new QueryResponse(watsonResponse, mediaURI);
+
+      return getQueryResponse(smsTxtBody, userPhoneNumber, metadata, mediaURI, position, watsonResponse);
+   }
+
+   private QueryResponse getQueryResponse(String smsTxtBody, String userPhoneNumber, CloudantPersistence metadata,
+         Optional<String> mediaURI, ResponsePosition position, String watsonResponse)
+   {
+      QueryResponse response;
+      if (position.equals(ResponsePosition.ADDRESS_INPUT))
+      {
+         response = getAddressResponse(smsTxtBody, userPhoneNumber, metadata, mediaURI, watsonResponse);
+      }
+      else
+      {
+         response = new QueryResponse(watsonResponse, mediaURI);
+      }
+      return response;
+   }
+
+   private QueryResponse getAddressResponse(String smsTxtBody, String userPhoneNumber, CloudantPersistence metadata,
+         Optional<String> mediaURI, String watsonResponse)
+   {
+      String response = watsonResponse;
+      List<GoogleAddressInformation> addressInfo = getAddressDetail(smsTxtBody);
+      if (addressInfo.size() == 1)
+      {
+         GoogleAddressInformation addressInfoElement = addressInfo.get(0);
+         metadata.persistAddress(userPhoneNumber, addressInfoElement);
+         String formattedAddress = addressInfoElement.getFormattedAddress();
+         mediaURI = Optional.of(mapper.getGoogleImageURI(formattedAddress));
+         response += " [" + formattedAddress + "]";
+      }
+      else
+      {
+         //TODO if 0 or more than 1 returned we need to ask for more information.
+         logger.error(
+               "multiple addresses returned for user input, need to query for more precise location. Address info '{}'",
+               addressInfo);
+      }
+      return new QueryResponse(response, mediaURI);
    }
 
    private ResponsePosition getPosition(Optional<Context> persistedContext)
@@ -175,27 +208,6 @@ public class MessageApi extends HttpServlet
          }
       }
       return pos;
-   }
-
-   private Optional<String> getAddressContent(String rawAddress, String userPhoneNumber, CloudantPersistence metadata)
-   {
-      Optional<String> mediaURI = Optional.empty();
-      List<GoogleAddressInformation> addressInfo = getAddressDetail(rawAddress);
-      if (addressInfo.size() == 1)
-      {
-         GoogleAddressInformation addressInfoElement = addressInfo.get(0);
-         metadata.persistAddress(userPhoneNumber, addressInfoElement);
-         String formattedAddress = addressInfoElement.getFormattedAddress();
-         mediaURI = Optional.of(mapper.getGoogleImageURI(formattedAddress));
-      }
-      else
-      {
-         //TODO if 0 or more than 1 returned we need to ask for more information.
-         logger.error(
-               "multiple addresses returned for user input, need to query for more precise location. Address info '{}'",
-               addressInfo);
-      }
-      return mediaURI;
    }
 
    private List<GoogleAddressInformation> getAddressDetail(String smsTxtBody)
