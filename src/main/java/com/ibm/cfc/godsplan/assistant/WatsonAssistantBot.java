@@ -1,6 +1,7 @@
 package com.ibm.cfc.godsplan.assistant;
 
 import java.util.Optional;
+import java.util.StringJoiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.ibm.watson.developer_cloud.assistant.v1.Assistant;
@@ -53,7 +54,12 @@ public class WatsonAssistantBot
 
    private String getResponseText(MessageResponse resp)
    {
-      return resp.getOutput().getText().toString();
+      StringJoiner joiner = new StringJoiner(" | ");
+      for (String output : resp.getOutput().getText())
+      {
+         joiner.add(output);
+      }
+      return joiner.toString();
    }
 
    private MessageOptions buildOptions(Optional<Context> context, Optional<InputData> input)

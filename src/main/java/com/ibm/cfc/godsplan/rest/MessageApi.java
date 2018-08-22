@@ -3,6 +3,8 @@ package com.ibm.cfc.godsplan.rest;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -11,14 +13,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.maps.errors.ApiException;
 import com.ibm.cfc.godsplan.assistant.WatsonAssistantBot;
 import com.ibm.cfc.godsplan.cloudant.CloudantPersistence;
 import com.ibm.cfc.godsplan.cloudant.model.ChatContext;
+import com.ibm.cfc.godsplan.maps.LocationMapper;
+import com.ibm.cfc.godsplan.maps.model.GoogleAddressInformation;
 import com.ibm.watson.developer_cloud.assistant.v1.model.Context;
 import com.ibm.watson.developer_cloud.assistant.v1.model.InputData;
 import com.twilio.twiml.MessagingResponse;
 import com.twilio.twiml.messaging.Body;
+import com.twilio.twiml.messaging.Media;
 import com.twilio.twiml.messaging.Message;
+import com.twilio.twiml.messaging.Message.Builder;
 
 /**
  * Servlet implementation class
@@ -26,8 +33,10 @@ import com.twilio.twiml.messaging.Message;
 @WebServlet("/message")
 public class MessageApi extends HttpServlet
 {
+   private static final String NODE_ADDRESSQUERY = "node_1_1534430223721";
    private static final long serialVersionUID = 1L;
    protected static final Logger logger = LoggerFactory.getLogger(MessageApi.class);
+   private static LocationMapper mapper = new LocationMapper();
 
    /**
     * @throws IOException
@@ -46,10 +55,11 @@ public class MessageApi extends HttpServlet
          Optional<String> smsTxtBody = parseUserInput(request);
          Optional<String> smsPhoneNumber = parsePhoneNumber(request);
          validateInput(smsTxtBody, smsPhoneNumber);
-         checkDebugMode(metadata, smsTxtBody, smsPhoneNumber);
-         String watsonResponse = queryWatson(bot, smsTxtBody.get(), smsPhoneNumber.get(), metadata);
-         String twiml = generateTwiml(watsonResponse);
+
+         QueryResponse queryResponse = processQuery(metadata, bot, smsTxtBody.get(), smsPhoneNumber.get());
+         String twiml = generateTwiml(queryResponse.getResponse(), queryResponse.getMediaURI());
          sendTwimlResponse(response, twiml);
+
          logger.info("doPost ran in {} seconds", Duration.between(startTime, Instant.now()).getSeconds());
       }
       catch (Exception e)
@@ -57,6 +67,36 @@ public class MessageApi extends HttpServlet
          logger.error("Uncaught Exception", e);
          throw e;
       }
+   }
+
+   private QueryResponse processQuery(CloudantPersistence metadata, WatsonAssistantBot bot, String smsTxtBody,
+         String smsPhoneNumber)
+   {
+      QueryResponse response;
+      if (isClearMetadata(smsTxtBody))
+      {
+         clearMetadata(metadata, smsPhoneNumber);
+         response = new QueryResponse("Cleared persisted context", Optional.empty());
+      }
+      else
+      {
+         Optional<Context> persistedContext = getPersistedContext(smsPhoneNumber, metadata);
+         response = queryWatson(bot, smsTxtBody, smsPhoneNumber, metadata, persistedContext);
+
+      }
+      return response;
+   }
+
+   private boolean isAddressResponse(Context context)
+   {
+      Object dialogStack = context.getSystem().get("dialog_stack");
+      return dialogStack != null && dialogStack.toString().contains(NODE_ADDRESSQUERY);
+   }
+
+   private void clearMetadata(CloudantPersistence metadata, String phoneNumber)
+   {
+      logger.info("Clearing context for phone number : '{}'", phoneNumber);
+      metadata.removeChatContext(phoneNumber);
    }
 
    private void validateInput(Optional<String> smsTxtBody, Optional<String> smsPhoneNumber) throws IOException
@@ -96,23 +136,71 @@ public class MessageApi extends HttpServlet
       }
    }
 
-   private String generateTwiml(String input)
+   private String generateTwiml(String input, Optional<String> mediaURI)
    {
       Body body = new Body.Builder(input).build();
-      Message msg = new Message.Builder().body(body).build();
+      Builder builder = new Message.Builder().body(body);
+      if (mediaURI.isPresent())
+      {
+         Media media = new Media.Builder(mediaURI.get()).build();
+         builder.media(media);
+      }
+      Message msg = builder.build();
       MessagingResponse twiml = new MessagingResponse.Builder().message(msg).build();
       return twiml.toXml();
    }
 
-   private String queryWatson(WatsonAssistantBot bot, String userInputBody, String userPhoneNumber,
-         CloudantPersistence metadata)
+   private QueryResponse queryWatson(WatsonAssistantBot bot, String smsTxtBody, String userPhoneNumber,
+         CloudantPersistence metadata, Optional<Context> persistedContext)
    {
-      Optional<InputData> input = Optional.of(new InputData.Builder(userInputBody).build());
-      Optional<Context> context = getPersistedContext(userPhoneNumber, metadata);
-
-      String watsonResponse = bot.sendAssistantMessage(context, input);
+      Optional<InputData> input = Optional.of(new InputData.Builder(smsTxtBody).build());
+      Optional<String> mediaURI = Optional.empty();
+      mediaURI = getAddressContent(smsTxtBody, userPhoneNumber, metadata, persistedContext);
+      String watsonResponse = bot.sendAssistantMessage(persistedContext, input);
       persistContext(userPhoneNumber, bot.getLastContext(), metadata);
-      return watsonResponse;
+      return new QueryResponse(watsonResponse, mediaURI);
+   }
+
+   private Optional<String> getAddressContent(String rawAddress, String userPhoneNumber, CloudantPersistence metadata,
+         Optional<Context> persistedContext)
+   {
+      Optional<String> mediaURI = Optional.empty();
+      if (persistedContext.isPresent())
+      {
+         Context context = persistedContext.get();
+         if (isAddressResponse(context))
+         {
+            List<GoogleAddressInformation> addressInfo = getAddressDetail(rawAddress);
+            if (addressInfo.size() == 1)
+            {
+               String formattedAddress = addressInfo.get(0).getFormattedAddress();
+               metadata.persistAddress(userPhoneNumber, formattedAddress);
+               mediaURI = Optional.of(mapper.getGoogleImageURI(formattedAddress));
+            }
+            else
+            {
+               //TODO if 0 or more than 1 returned we need to ask for more information.
+               logger.error(
+                     "multiple addresses returned for user input, need to query for more precise location. Address info '{}'",
+                     addressInfo);
+            }
+         }
+      }
+      return mediaURI;
+   }
+
+   private List<GoogleAddressInformation> getAddressDetail(String smsTxtBody)
+   {
+      List<GoogleAddressInformation> addressInfo = new ArrayList<>();
+      try
+      {
+         addressInfo = mapper.getFormattedAddress(smsTxtBody);
+      }
+      catch (ApiException | InterruptedException | IOException e)
+      {
+         logger.error("Formatted Address query failed", e);
+      }
+      return addressInfo;
    }
 
    private void persistContext(String userPhoneNumber, Optional<Context> responseContext, CloudantPersistence metadata)
@@ -144,14 +232,10 @@ public class MessageApi extends HttpServlet
       logger.info("Text body: '{}'", textBody);
       return textBody;
    }
-   
-   private void checkDebugMode(CloudantPersistence metadata, Optional<String> smsText,  Optional<String> phoneNumber)
+
+   private boolean isClearMetadata(String smsText)
    {
-      if(smsText.get().trim().equalsIgnoreCase("Clear"))
-      {
-         logger.info("Clearing context for phone number : '{}'", phoneNumber.get());
-         metadata.removeChatContext(phoneNumber.get());
-      }
+      return smsText.trim().equalsIgnoreCase("Clear");
    }
 
    /**

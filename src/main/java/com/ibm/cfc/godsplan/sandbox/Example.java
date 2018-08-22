@@ -1,11 +1,14 @@
 package com.ibm.cfc.godsplan.sandbox;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Optional;
 import com.google.maps.errors.ApiException;
-import com.google.maps.model.GeocodingResult;
 import com.ibm.cfc.godsplan.assistant.WatsonAssistantBot;
 import com.ibm.cfc.godsplan.maps.LocationMapper;
+import com.ibm.cfc.godsplan.maps.model.GoogleAddressInformation;
 import com.twilio.Twilio;
 
 public class Example
@@ -16,12 +19,12 @@ public class Example
    public static final String CLIENT_PHONE_NUMBER = "+14162093379";
    public static final String SERVER_PHONE_NUMBER = "+16476973928";
 
-   public static void main(String[] args) throws ApiException, InterruptedException, IOException
+   public static void main(String[] args) throws ApiException, InterruptedException, IOException, URISyntaxException
    {
       Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
 
       WatsonAssistantBot watson = new WatsonAssistantBot();
-      String resp = watson.sendAssistantMessage(Optional.empty(), Optional.empty());
+      watson.sendAssistantMessage(Optional.empty(), Optional.empty());
 
       // Message message = Message
       // .creator(new PhoneNumber(CLIENT_PHONE_NUMBER), new
@@ -29,14 +32,23 @@ public class Example
       //
       // System.out.println(message.getSid());
 
-      String address = "8200 Warden Ave,Unionville,ON";
+      String rawAddress = "8200 Warden Ave";
       LocationMapper mapper = new LocationMapper();
-      GeocodingResult[] result = mapper.getGeocodingResults(address);
+      List<GoogleAddressInformation> addresses = mapper.getFormattedAddress(rawAddress);
+      for (GoogleAddressInformation address : addresses)
+      {
+         System.out.println(address);
+      }
 
-      System.out.println(result[0].addressComponents);
+      String coords = mapper.getGeocodingCoordinates(rawAddress);
+      File image = File.createTempFile("map_", ".png");
+      mapper.getGoogleImage(coords, "600x800", image);
+      System.out.println("Map of '" + rawAddress + "' can be found at '" + image.getAbsolutePath() + "'");
 
-      String coords = mapper.getGeocodingCoordinates(address);
+      //      String imageURI = mapper.getGoogleImageURI(addresses.get(0).getFormattedAddress());
+      //      String body = "Here is a map of your location";
+      //      Message.creator(new PhoneNumber(CLIENT_PHONE_NUMBER), new PhoneNumber(SERVER_PHONE_NUMBER), body)
+      //            .setMediaUrl(Promoter.listOfOne(URI.create(imageURI))).create();
 
-      mapper.getGoogleImage(coords, "600x800");
    }
 }

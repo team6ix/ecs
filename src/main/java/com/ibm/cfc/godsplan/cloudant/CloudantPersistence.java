@@ -44,6 +44,7 @@ public class CloudantPersistence
     */
    public void persistChatContext(String phoneNumber, Context context)
    {
+	  logger.info("saving chat context for '{}'", phoneNumber); 
       JsonElement contextJson = parser.parse(context.toString());
 
       try (InputStream is = chatContextDb.find(phoneNumber))
@@ -83,6 +84,7 @@ public class CloudantPersistence
 
    public void persistAddress(String phoneNumber, String address)
    {
+	  logger.info("saving address for '{}'", phoneNumber); 
       try (InputStream is = userContextDb.find(phoneNumber);)
       {
          JsonObject json = composeExistingDocument(is);
@@ -104,6 +106,7 @@ public class CloudantPersistence
 
    public void removeChatContext(String phoneNumber)
    {
+	  logger.info("removing chat context for '{}'", phoneNumber);
       try (InputStream is = chatContextDb.find(phoneNumber);)
       {
          JsonObject json = composeExistingDocument(is);
@@ -111,7 +114,7 @@ public class CloudantPersistence
       }
       catch (NoDocumentException e)
       {
-         // log no record found for this phone number
+    	  logger.info("no chat context found for '{}'", phoneNumber);
       }
       catch (IOException e1)
       {
@@ -121,6 +124,7 @@ public class CloudantPersistence
 
    public void removeUserContext(String phoneNumber)
    {
+	  logger.info("removing user context for '{}'", phoneNumber);
       try (InputStream is = userContextDb.find(phoneNumber);)
       {
          JsonObject json = composeExistingDocument(is);
@@ -128,7 +132,7 @@ public class CloudantPersistence
       }
       catch (NoDocumentException e)
       {
-         // log no record found for this phone number
+         logger.info("no user context found for '{}'", phoneNumber);
       }
       catch (IOException e1)
       {
@@ -145,7 +149,6 @@ public class CloudantPersistence
 
    private JsonObject composeExistingDocument(InputStream is)
    {
-
       JsonElement doc = parser.parse(new InputStreamReader(is));
       JsonElement id = doc.getAsJsonObject().get("_id");
       JsonElement rev = doc.getAsJsonObject().get("_rev");

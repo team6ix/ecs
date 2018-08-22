@@ -27,4 +27,11 @@ Now navigate to Eclipse Git view, right click on the repo and click "Import Proj
 2. Click `Properties`
 3. Navigate to `Project Facets`
 4. Ensure `Dynamic Web Module` and `Java` are selected
-7. Ensure you have the following:
+5. Navigate to `Deployment Assembly`
+6. Ensure you have the following:
+
+| Source | Deploy Path |
+| --- | --- |
+| src/main/java | WEB-INF/classes |
+| src/main/resources | WEB-INF/classes |
+| src/main/webapp | / |
