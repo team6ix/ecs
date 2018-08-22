@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.cloudant.client.api.ClientBuilder;
 import com.cloudant.client.api.CloudantClient;
 import com.cloudant.client.api.Database;
@@ -14,13 +16,15 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ibm.cfc.godsplan.cloudant.model.ChatContext;
+import com.ibm.cfc.godsplan.cloudant.model.LocationContext;
+import com.ibm.cfc.godsplan.maps.model.GoogleAddressInformation;
 import com.ibm.watson.developer_cloud.assistant.v1.model.Context;
 
 public class CloudantPersistence
 {
 
    Database chatContextDb;
-   Database userContextDb;
+   Database locationContextDb;
    JsonParser parser;
    protected static final Logger logger = LoggerFactory.getLogger(CloudantPersistence.class);
 
@@ -31,7 +35,7 @@ public class CloudantPersistence
             .password("39965f7b72264bcd70f7bc27de159a629da46f2ac7a4f63108fa8d9b150d8c22").build();
 
       chatContextDb = client.database("chatcontext", false);
-      userContextDb = client.database("usercontext", false);
+      locationContextDb = client.database("locationcontext", false);
 
       parser = new JsonParser();
    }
@@ -82,26 +86,43 @@ public class CloudantPersistence
       return context;
    }
 
-   public void persistAddress(String phoneNumber, String address)
+   public void persistAddress(String phoneNumber, GoogleAddressInformation address)
    {
-	  logger.info("saving address for '{}'", phoneNumber); 
-      try (InputStream is = userContextDb.find(phoneNumber);)
+	  logger.info("saving address information for '{}'", phoneNumber); 
+      try (InputStream is = locationContextDb.find(phoneNumber);)
       {
          JsonObject json = composeExistingDocument(is);
-         json.addProperty("address", address);
-         userContextDb.update(json);
+         composeLocationJson(address, json);
+         locationContextDb.update(json);
 
       }
       catch (NoDocumentException e)
       {
          JsonObject json = composeNewDocument(phoneNumber);
-         json.addProperty("address", address);
-         userContextDb.save(json);
+         composeLocationJson(address, json);
+         locationContextDb.save(json);
       }
       catch (IOException e1)
       {
          e1.printStackTrace(); // log or rethrow as somethin else our app handles
       }
+   }
+   
+   public Optional<LocationContext> retrieveAddress(String phoneNumber)
+   {
+     logger.info("retrieving address information for '{}'", phoneNumber);  
+	 Optional<LocationContext> locationContext;
+	 try
+	 {
+	   locationContext = Optional.of(locationContextDb.find(LocationContext.class, phoneNumber));
+	 }
+	 catch (NoDocumentException nde)
+	 {
+	   logger.info("No address information for '{}' found", phoneNumber);
+	   locationContext = Optional.empty();
+	 }
+	 
+	 return locationContext;
    }
 
    public void removeChatContext(String phoneNumber)
@@ -125,10 +146,10 @@ public class CloudantPersistence
    public void removeUserContext(String phoneNumber)
    {
 	  logger.info("removing user context for '{}'", phoneNumber);
-      try (InputStream is = userContextDb.find(phoneNumber);)
+      try (InputStream is = locationContextDb.find(phoneNumber);)
       {
          JsonObject json = composeExistingDocument(is);
-         userContextDb.remove(json);
+         locationContextDb.remove(json);
       }
       catch (NoDocumentException e)
       {
@@ -156,5 +177,14 @@ public class CloudantPersistence
       json.add("_id", id);
       json.add("_rev", rev);
       return json;
+   }
+   
+   private void composeLocationJson(GoogleAddressInformation address, JsonObject json) 
+   {
+ 	  JsonObject location = new JsonObject();
+	  location.addProperty("formattedAddress", address.getFormattedAddress());
+	  location.addProperty("latitude", address.getLatitude());
+	  location.addProperty("longitude", address.getLongitude());
+	  json.add("location", location);
    }
 }

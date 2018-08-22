@@ -8,7 +8,6 @@ import com.ibm.watson.developer_cloud.assistant.v1.model.Context;
  */
 public class ChatContext
 {
-
    private final Context context;
    private final String _id;
 

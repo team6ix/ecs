@@ -173,8 +173,9 @@ public class MessageApi extends HttpServlet
             List<GoogleAddressInformation> addressInfo = getAddressDetail(rawAddress);
             if (addressInfo.size() == 1)
             {
-               String formattedAddress = addressInfo.get(0).getFormattedAddress();
-               metadata.persistAddress(userPhoneNumber, formattedAddress);
+               GoogleAddressInformation addressInfoElement = addressInfo.get(0);
+               metadata.persistAddress(userPhoneNumber, addressInfoElement);
+               String formattedAddress = addressInfoElement.getFormattedAddress();
                mediaURI = Optional.of(mapper.getGoogleImageURI(formattedAddress));
             }
             else
