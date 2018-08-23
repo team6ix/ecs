@@ -124,6 +124,11 @@ public class CloudantPersistence
       }
    }
    
+   public void persistAddressConfirmation(String phoneNumber, boolean confirm)
+   {
+      
+      
+   }
    /**
     * 
     * @param phoneNumber
@@ -208,9 +213,9 @@ public class CloudantPersistence
       return json;
    }
    
-   private void composeLocationJson(GoogleAddressInformation address, JsonObject json) 
+   private void composeLocationJson(GoogleAddressInformation address, JsonObject json)
    {
- 	  JsonObject location = new JsonObject();
+      JsonObject location = new JsonObject();
 	  location.addProperty("formattedAddress", address.getFormattedAddress());
 	  location.addProperty("latitude", address.getLatitude());
 	  location.addProperty("longitude", address.getLongitude());
