@@ -183,12 +183,12 @@ public class MessageApi extends HttpServlet
    {
 	   String response = watsonResponse;
 	   boolean confirmed = false;
-	   if (smsTxtBody.contains("yes"))
+	   if (smsTxtBody.trim().equalsIgnoreCase("yes"))
 	   {
 		   confirmed = true;
 		   metadata.persistAddressConfirmation(userPhoneNumber, confirmed);
 	   }
-	   else if (smsTxtBody.contains("no"))
+	   else if (smsTxtBody.trim().equalsIgnoreCase("no"))
 	   {
 		   metadata.persistAddressConfirmation(userPhoneNumber, confirmed);
 	   }
