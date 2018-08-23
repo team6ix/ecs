@@ -49,10 +49,14 @@ public class Example
       System.out.println("Map of '" + rawAddress + "' can be found at '" + image.getAbsolutePath() + "'");
 
 //      CloudantPersistence p = new CloudantPersistence();
+//      p.removePhoneNumber(CLIENT_PHONE_NUMBER);
 //      p.persistAddress(CLIENT_PHONE_NUMBER, addresses.get(0));
 //      Optional<LocationContext> addressInfo = p.retrieveAddress(CLIENT_PHONE_NUMBER);
 //      System.out.println(addressInfo.get().getAddress().toString());
 //      
+//      p.persistAddressConfirmation(CLIENT_PHONE_NUMBER, true);
+//      p.shutdown();
+     
       //      String imageURI = mapper.getGoogleImageURI(addresses.get(0).getFormattedAddress());
       //      String body = "Here is a map of your location";
       //      Message.creator(new PhoneNumber(CLIENT_PHONE_NUMBER), new PhoneNumber(SERVER_PHONE_NUMBER), body)
