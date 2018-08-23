@@ -32,6 +32,7 @@ dependencies {
 	compile group: "com.ibm.watson.developer_cloud", name: "assistant", version: "6.4.0"
 	compile group: 'com.cloudant', name: 'cloudant-client', version: '2.12.0'
 	compile group: "com.google.maps", name: "google-maps-services", version: "0.2.8"
+	compile group: "com.mapbox.mapboxsdk", name: "mapbox-sdk-services", version: "3.5.0-SNAPSHOT"
 	//compile "org.slf4j:slf4j-nop:1.7.25"
 	compile 'org.apache.httpcomponents:httpclient:4.5.6'
     // Use JUnit test framework
@@ -46,4 +47,5 @@ repositories {
     // Use jcenter for resolving your dependencies.
     // You can declare any Maven/Ivy/file repository here.
 	maven { url = "http://repo.maven.apache.org/maven2" }
+	maven { url = "http://oss.sonatype.org/content/repositories/snapshots/" }
 }

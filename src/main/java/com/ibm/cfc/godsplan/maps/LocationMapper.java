@@ -14,19 +14,18 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
 import com.ibm.cfc.godsplan.maps.model.GoogleAddressInformation;
+import com.mapbox.geojson.Point;
 
 public class LocationMapper
 {
    private static final String IMAGESIZE_DEFAULT = "800x600";
-   private final String key = System.getenv("googlekey");
+   private final String key = System.getenv("GOOGLE_API_KEY");
    private final GeoApiContext context;
    // address, size, apikey | request centers a map and places a red pin at
    // specified locations, and creates a snapshot of specified size
@@ -86,12 +85,11 @@ public class LocationMapper
     * @throws InterruptedException
     * @throws IOException
     */
-   public String getGeocodingCoordinates(String address) throws ApiException, InterruptedException, IOException
+   public Point getGeocodingCoordinates(String address) throws ApiException, InterruptedException, IOException
    {
       GeocodingResult[] results = getGeocodingResults(address);
       LatLng coords = results[0].geometry.location;
-      Gson gson = new GsonBuilder().setPrettyPrinting().create();
-      return gson.toJson(coords.toUrlValue());
+      return Point.fromLngLat(coords.lng, coords.lat);
 
    }
 
