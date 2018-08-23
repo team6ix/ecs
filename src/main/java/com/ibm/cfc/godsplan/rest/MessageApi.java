@@ -92,7 +92,7 @@ public class MessageApi extends HttpServlet
    private void clearMetadata(CloudantPersistence metadata, String phoneNumber)
    {
       logger.info("Clearing context for phone number : '{}'", phoneNumber);
-      metadata.removeChatContext(phoneNumber);
+      metadata.removePhoneNumber(phoneNumber);
    }
 
    private void validateInput(Optional<String> smsTxtBody, Optional<String> smsPhoneNumber) throws IOException
