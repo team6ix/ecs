@@ -48,6 +48,7 @@ public class Example
 
       //      CloudantPersistence p = new CloudantPersistence();
       //      p.removePhoneNumber(CLIENT_PHONE_NUMBER);
+
       //      p.persistAddress(CLIENT_PHONE_NUMBER, addresses.get(0));
       //      Optional<LocationContext> addressInfo = p.retrieveAddress(CLIENT_PHONE_NUMBER);
       //      System.out.println(addressInfo.get().getAddress().toString());
