@@ -47,7 +47,7 @@ public class Example
       File image = File.createTempFile("map_", ".png");
       mapper.getGoogleImage(coords, "600x800", image);
       System.out.println("Map of '" + rawAddress + "' can be found at '" + image.getAbsolutePath() + "'");
-
+//
 //      CloudantPersistence p = new CloudantPersistence();
 //      p.removePhoneNumber(CLIENT_PHONE_NUMBER);
 //      p.persistAddress(CLIENT_PHONE_NUMBER, addresses.get(0));
