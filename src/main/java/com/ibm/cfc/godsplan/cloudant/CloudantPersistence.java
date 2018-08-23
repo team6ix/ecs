@@ -25,7 +25,7 @@ import com.ibm.watson.developer_cloud.assistant.v1.model.Context;
  */
 public class CloudantPersistence
 {
-   
+
    /**
     * Cloudant database that contains documents defined by {@link SurveyContext}
     */
@@ -45,44 +45,44 @@ public class CloudantPersistence
     * Key for all documents. Represents a phone number.
     */
    public static final String _ID = "_id";
-   
+
    /**
     * Cloudant document reivison. Needed to update all documents.
     */
    public static final String _REV = "_rev";
-   
+
    /**
-    * Field in {@link LocationContext} that represents  {@link GoogleAddressInformation#getLongitude()}
+    * Field in {@link LocationContext} that represents {@link GoogleAddressInformation#getLongitude()}
     */
    public static final String LONGITUDE = "longitude";
-   
+
    /**
     * Field in {@link LocationContext} that represents {@link GoogleAddressInformation#getLatitude()}
     */
    public static final String LATITUDE = "latitude";
-   
+
    /**
     * Field in {@link LocationContext} that represents {@link GoogleAddressInformation#getFormattedAddress()}
     */
    public static final String FORMATTED_ADDRESS = "formattedAddress";
-   
+
    /**
     * Field in {@link LocationContext} that represents {@link LocationContext#getAddressConfirmed()}
     */
    public static final String CONFIRMED_ADDRESS = "confirmedAddress";
-   
+
    /**
     * Field in {@link LocationContext} that holds data in {@link GoogleAddressInformation}
     */
    public static final String LOCATION = "location";
-   
+
    private Database chatContextDb;
    private Database locationContextDb;
    private Database surveyContextDb;
-   
+
    private CloudantClient client;
    private JsonParser parser;
-   
+
    protected static final Logger logger = LoggerFactory.getLogger(CloudantPersistence.class);
 
    /**
@@ -109,7 +109,7 @@ public class CloudantPersistence
     */
    public void persistChatContext(String phoneNumber, Context context)
    {
-	  logger.info("saving chat context for '{}'", phoneNumber); 
+      logger.info("saving chat context for '{}'", phoneNumber);
       JsonElement contextJson = parser.parse(context.toString());
 
       try (InputStream is = chatContextDb.find(phoneNumber))
@@ -135,7 +135,7 @@ public class CloudantPersistence
    /**
     * 
     * @param phoneNumber
-    * @return Optional<ChatContext> 
+    * @return Optional<ChatContext>
     */
    public Optional<ChatContext> retrieveChatContext(String phoneNumber)
    {
@@ -167,7 +167,6 @@ public class CloudantPersistence
          JsonObject json = composeExistingDocument(doc);
          composeLocationJson(address, json);
          locationContextDb.update(json);
-
       }
       catch (NoDocumentException e)
       {
@@ -180,32 +179,33 @@ public class CloudantPersistence
          e1.printStackTrace(); // log or rethrow as somethin else our app handles
       }
    }
-   
+
    /**
     * 
     * @param phoneNumber
-    * @param confirm true if user confirmed address is correct, false if user says address is incorrect
+    * @param confirm
+    *           true if user confirmed address is correct, false if user says address is incorrect
     */
    public void persistAddressConfirmation(String phoneNumber, boolean confirm)
    {
-     logger.info("saving address confirmation for '{}'", phoneNumber);
-     try (InputStream is = locationContextDb.find(phoneNumber);)
-     {
-        JsonElement doc = parseJsonFromStream(is);
-        JsonObject json = composeExistingLocationDocument(doc);
-        json.addProperty(CONFIRMED_ADDRESS, confirm);
-        locationContextDb.update(json);
-     }
-     catch (NoDocumentException e)
-     {
-        logger.info("no address found for '{}' to confirm, phoneNumber");
-     }
-     catch (IOException e1)
-     {
-        e1.printStackTrace(); // log or rethrow as somethin else our app handles
-     }
+      logger.info("saving address confirmation for '{}'", phoneNumber);
+      try (InputStream is = locationContextDb.find(phoneNumber);)
+      {
+         JsonElement doc = parseJsonFromStream(is);
+         JsonObject json = composeExistingLocationDocument(doc);
+         json.addProperty(CONFIRMED_ADDRESS, confirm);
+         locationContextDb.update(json);
+      }
+      catch (NoDocumentException e)
+      {
+         logger.info("no address found for '{}' to confirm, phoneNumber");
+      }
+      catch (IOException e1)
+      {
+         e1.printStackTrace(); // log or rethrow as somethin else our app handles
+      }
    }
-   
+
    /**
     * 
     * @param phoneNumber
@@ -227,7 +227,7 @@ public class CloudantPersistence
 
       return locationContext;
    }
-   
+
    /**
     * 
     * @param phoneNumber
@@ -238,14 +238,14 @@ public class CloudantPersistence
       removeLocationContext(phoneNumber);
       removeSurveyContext(phoneNumber);
    }
-   
+
    /**
     * 
     * @param phoneNumber
     */
    public void removeChatContext(String phoneNumber)
    {
-	  logger.info("removing chat context for '{}'", phoneNumber);
+      logger.info("removing chat context for '{}'", phoneNumber);
       try (InputStream is = chatContextDb.find(phoneNumber);)
       {
          JsonElement doc = parseJsonFromStream(is);
@@ -254,7 +254,7 @@ public class CloudantPersistence
       }
       catch (NoDocumentException e)
       {
-    	  logger.info("no chat context found for '{}'", phoneNumber);
+         logger.info("no chat context found for '{}'", phoneNumber);
       }
       catch (IOException e1)
       {
@@ -268,7 +268,7 @@ public class CloudantPersistence
     */
    public void removeLocationContext(String phoneNumber)
    {
-	   logger.info("removing location context for '{}'", phoneNumber);
+      logger.info("removing location context for '{}'", phoneNumber);
       try (InputStream is = locationContextDb.find(phoneNumber);)
       {
          JsonElement doc = parseJsonFromStream(is);
@@ -284,7 +284,7 @@ public class CloudantPersistence
          e1.printStackTrace();
       }
    }
-   
+
    /**
     * 
     * @param phoneNumber
@@ -315,6 +315,7 @@ public class CloudantPersistence
    {
       client.shutdown();
    }
+
    private JsonObject composeNewDocument(String phoneNumber)
    {
       JsonObject json = new JsonObject();
@@ -328,7 +329,7 @@ public class CloudantPersistence
       json.add(LOCATION, doc.getAsJsonObject().get(LOCATION));
       return json;
    }
-   
+
    private JsonObject composeExistingDocument(JsonElement doc)
    {
       JsonElement id = doc.getAsJsonObject().get(_ID);
@@ -338,17 +339,17 @@ public class CloudantPersistence
       json.add(_REV, rev);
       return json;
    }
-   
+
    private void composeLocationJson(GoogleAddressInformation address, JsonObject json)
    {
-     JsonObject location = new JsonObject();
-	  location.addProperty(FORMATTED_ADDRESS, address.getFormattedAddress());
-	  location.addProperty(LATITUDE, address.getLatitude());
-	  location.addProperty(LONGITUDE, address.getLongitude());
-	  json.add(LOCATION, location);
-	  json.addProperty(CONFIRMED_ADDRESS, false);
+      JsonObject location = new JsonObject();
+      location.addProperty(FORMATTED_ADDRESS, address.getFormattedAddress());
+      location.addProperty(LATITUDE, address.getLatitude());
+      location.addProperty(LONGITUDE, address.getLongitude());
+      json.add(LOCATION, location);
+      json.addProperty(CONFIRMED_ADDRESS, false);
    }
-   
+
    private JsonElement parseJsonFromStream(InputStream is)
    {
       return parser.parse(new InputStreamReader(is));
