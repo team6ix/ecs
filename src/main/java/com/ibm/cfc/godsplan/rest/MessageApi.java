@@ -6,13 +6,16 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.google.maps.errors.ApiException;
 import com.ibm.cfc.godsplan.assistant.WatsonAssistantBot;
 import com.ibm.cfc.godsplan.cloudant.CloudantPersistence;
@@ -164,11 +167,37 @@ public class MessageApi extends HttpServlet
       {
          response = getAddressResponse(smsTxtBody, userPhoneNumber, metadata, mediaURI, watsonResponse);
       }
+      else if (position.equals(ResponsePosition.ADDRESS_CONFIRMATION))
+      {
+    	  response = confirmAddress(smsTxtBody, userPhoneNumber, metadata, mediaURI, watsonResponse);
+      }
       else
       {
          response = new QueryResponse(watsonResponse, mediaURI);
       }
       return response;
+   }
+   
+   private QueryResponse confirmAddress(String smsTxtBody, String userPhoneNumber, CloudantPersistence metadata,
+         Optional<String> mediaURI, String watsonResponse)
+   {
+	   String response = watsonResponse;
+	   boolean confirmed = false;
+	   if (smsTxtBody.contains("yes"))
+	   {
+		   confirmed = true;
+		   metadata.persistAddressConfirmation(userPhoneNumber, confirmed);
+	   }
+	   else if (smsTxtBody.contains("no"))
+	   {
+		   metadata.persistAddressConfirmation(userPhoneNumber, confirmed);
+	   }
+	   else
+	   {
+		   logger.error("Unrecognized response '{}'", smsTxtBody);
+	   }
+	   return new QueryResponse(response);
+	   
    }
 
    private QueryResponse getAddressResponse(String smsTxtBody, String userPhoneNumber, CloudantPersistence metadata,
