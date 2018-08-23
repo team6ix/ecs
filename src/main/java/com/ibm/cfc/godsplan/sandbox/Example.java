@@ -5,8 +5,11 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
+
 import com.google.maps.errors.ApiException;
 import com.ibm.cfc.godsplan.assistant.WatsonAssistantBot;
+import com.ibm.cfc.godsplan.cloudant.CloudantPersistence;
+import com.ibm.cfc.godsplan.cloudant.model.LocationContext;
 import com.ibm.cfc.godsplan.maps.LocationMapper;
 import com.ibm.cfc.godsplan.maps.model.GoogleAddressInformation;
 import com.twilio.Twilio;
@@ -45,6 +48,11 @@ public class Example
       mapper.getGoogleImage(coords, "600x800", image);
       System.out.println("Map of '" + rawAddress + "' can be found at '" + image.getAbsolutePath() + "'");
 
+//      CloudantPersistence p = new CloudantPersistence();
+//      p.persistAddress(CLIENT_PHONE_NUMBER, addresses.get(0));
+//      Optional<LocationContext> addressInfo = p.retrieveAddress(CLIENT_PHONE_NUMBER);
+//      System.out.println(addressInfo.get().getAddress().toString());
+//      
       //      String imageURI = mapper.getGoogleImageURI(addresses.get(0).getFormattedAddress());
       //      String body = "Here is a map of your location";
       //      Message.creator(new PhoneNumber(CLIENT_PHONE_NUMBER), new PhoneNumber(SERVER_PHONE_NUMBER), body)
