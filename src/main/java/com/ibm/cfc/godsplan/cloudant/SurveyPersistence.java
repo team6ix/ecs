@@ -13,6 +13,7 @@ package com.ibm.cfc.godsplan.cloudant;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.cloudant.client.api.Database;
@@ -33,7 +34,6 @@ public class SurveyPersistence
    public static final String SURVEY_CONTEXT_DB = "surveycontext";
 
    protected static final Logger logger = LoggerFactory.getLogger(SurveyPersistence.class);
-
    
    Database db;
    JsonDocumentComposer compose;
@@ -50,6 +50,52 @@ public class SurveyPersistence
       parser = new JsonParser();
    }
 
+   /**
+    * 
+    * @param phoneNumber
+    * @param b true or false
+    * @param attribute the {@link SurveyAttribute}
+    */
+   public void persistMustEvacuate(String phoneNumber, boolean b)
+   {
+      logger.info("setting mustEvacuate for '{}'", phoneNumber);
+      persistAttribute(phoneNumber, "mustEvacuate", b);
+   }
+
+   /**
+    * 
+    * @param phoneNumber
+    * @param b
+    */
+   public void persistHasVehicle(String phoneNumber, boolean b)
+   {
+      logger.info("setting hasVehicle for '{}'", phoneNumber);
+      persistAttribute(phoneNumber, "hasVehicle", b);
+   }
+
+   /**
+    * 
+    * @param phoneNumber
+    * @return the surveycontext
+    */
+   public Optional<SurveyContext>retrieve(String phoneNumber)
+   {
+      logger.info("retrieving survey information for '{}'", phoneNumber);
+      Optional<SurveyContext> surveyContext;
+      try
+      {
+         surveyContext = Optional.of(db.find(SurveyContext.class, phoneNumber));
+      }
+      catch (NoDocumentException nde)
+      {
+         logger.info("No address information for '{}' found", phoneNumber);
+         surveyContext = Optional.empty();
+      }
+
+      return surveyContext;
+   }
+   
+   
    /**
     * 
     * @param phoneNumber
@@ -70,6 +116,27 @@ public class SurveyPersistence
       catch (IOException e1)
       {
          e1.printStackTrace();
+      }
+   }
+   
+   private void persistAttribute(String phoneNumber, String attribute, boolean b)
+   {
+      try (InputStream is = db.find(phoneNumber);)
+      {
+         JsonElement doc = compose.jsonFromStream(is);
+         JsonObject json = compose.existingDocument(doc);
+         json.addProperty(attribute, b);
+         db.update(json);
+      }
+      catch (NoDocumentException e)
+      {
+         JsonObject json = compose.blankDocument(phoneNumber);
+         json.addProperty(attribute, b);
+         db.save(json);
+      }
+      catch (IOException e1)
+      {
+         e1.printStackTrace(); // log or rethrow as somethin else our app handles
       }
    }
 }

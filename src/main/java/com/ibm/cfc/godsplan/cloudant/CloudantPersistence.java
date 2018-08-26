@@ -8,6 +8,7 @@ import com.cloudant.client.api.ClientBuilder;
 import com.cloudant.client.api.CloudantClient;
 import com.ibm.cfc.godsplan.cloudant.model.ChatContext;
 import com.ibm.cfc.godsplan.cloudant.model.LocationContext;
+import com.ibm.cfc.godsplan.cloudant.model.SurveyContext;
 import com.ibm.cfc.godsplan.maps.model.GoogleAddressInformation;
 import com.ibm.watson.developer_cloud.assistant.v1.model.Context;
 
@@ -91,6 +92,36 @@ public class CloudantPersistence
       return locationDb.retrieve(phoneNumber);
    }
 
+   /**
+    * 
+    * @param clientPhoneNumber
+    * @param b
+    */
+   public void persistMustEvacuate(String clientPhoneNumber, boolean b)
+   {
+      surveyDb.persistMustEvacuate(clientPhoneNumber, b);
+   }
+   
+   /**
+    * 
+    * @param phoneNumber
+    * @param b
+    */
+   public void persistHasVehicle(String phoneNumber, boolean b)
+   {
+      surveyDb.persistHasVehicle(phoneNumber, b);
+   }
+   
+   /**
+    * 
+    * @param clientPhoneNumber
+    * @return  the survey context
+    */
+   public Optional<SurveyContext> retrieveSurveyContext(String clientPhoneNumber)
+   {
+      return surveyDb.retrieve(clientPhoneNumber);
+   }
+   
    /**
     * 
     * @param phoneNumber

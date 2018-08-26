@@ -8,12 +8,8 @@ import java.util.Optional;
 public class SurveyContext
 {
    private String _id;
-   private Optional<Boolean> mustEvacuate;
-//   private Boolean physicallyAbleToEvacuate;
-//   private Boolean hasVehicle;
-//   private Boolean requiresEmergencyAssistance;
-//   private Boolean requiresEvacuationAssistance;
-//   private int availableSeatsInVehicle;
+   private Boolean mustEvacuate;
+   private Boolean hasVehicle;
    
    /**
     * @return the _id
@@ -33,8 +29,45 @@ public class SurveyContext
    /**
     * @return the mustEvacuate
     */
-   public Optional<Boolean> getMustEvacuate()
+   public Boolean getMustEvacuate()
    {
       return mustEvacuate;
    }
+   
+   /**
+    * 
+    * @param isMustEvacuate
+    */
+   public void setMustEvacuate(boolean isMustEvacuate)
+   {
+      this.mustEvacuate = isMustEvacuate;
+   }
+   
+   /**
+    * @return the hasVehicle
+    */
+   public Boolean getHasVehicle()
+   {
+      return hasVehicle;
+   }
+   
+   /**
+    * @param hasVehicle the hasVehicle to set
+    */
+   public void setHasVehicle(Boolean hasVehicle)
+   {
+      this.hasVehicle = hasVehicle;
+   }
+
+   /**
+    * 
+    */
+   @Override
+   public String toString()
+   {
+      return "SurveyContext [get_id()=" + get_id() + ", getMustEvacuate()=" + getMustEvacuate() + ", getHasVehicle()="
+            + getHasVehicle() + "]";
+   }
+
+   
 }
