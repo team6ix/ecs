@@ -178,6 +178,15 @@ public class MessageApi extends HttpServlet
 			response = confirmResponse(smsTxtBody, userPhoneNumber, metadata, mediaURI, watsonResponse,
 					ResponsePosition.INJURY_CONFIRMATION);
 		}
+		else if (position.equals(ResponsePosition.HAS_VEHICLE))
+		{
+			response = confirmResponse(smsTxtBody, userPhoneNumber, metadata, mediaURI, watsonResponse,
+					ResponsePosition.HAS_VEHICLE);
+		}
+		else if (position.equals(ResponsePosition.HAS_SPACE_IN_VEHICLE))
+		{
+			response = confirmResponse(smsTxtBody, userPhoneNumber, metadata, mediaURI, watsonResponse, position);
+		}
 		else
 		{
 			response = new QueryResponse(watsonResponse, mediaURI);
@@ -215,6 +224,14 @@ public class MessageApi extends HttpServlet
 		else if (position.equals(ResponsePosition.INJURY_CONFIRMATION))
 		{
 			metadata.persistInjuryConfirmation(userPhoneNumber, confirmation);
+		}
+		else if (position.equals(ResponsePosition.HAS_VEHICLE))
+		{
+			metadata.persistHasVehicle(userPhoneNumber, confirmation);
+		}
+		else if (position.equals(ResponsePosition.HAS_SPACE_IN_VEHICLE))
+		{
+			metadata.persistHasSpace(userPhoneNumber, confirmation);
 		}
 	}
 
