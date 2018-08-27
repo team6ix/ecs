@@ -87,6 +87,7 @@ public class MessageApi extends HttpServlet
 			response = queryWatson(bot, smsTxtBody, smsPhoneNumber, metadata, persistedContext);
 
 		}
+		logger.info("Returning the response to user: {}", response.getResponse());
 		return response;
 	}
 
@@ -185,7 +186,8 @@ public class MessageApi extends HttpServlet
 		}
 		else if (position.equals(ResponsePosition.HAS_SPACE_IN_VEHICLE))
 		{
-			response = confirmResponse(smsTxtBody, userPhoneNumber, metadata, mediaURI, watsonResponse, position);
+			response = confirmResponse(smsTxtBody, userPhoneNumber, metadata, mediaURI, watsonResponse,
+					ResponsePosition.HAS_SPACE_IN_VEHICLE);
 		}
 		else
 		{
@@ -244,7 +246,7 @@ public class MessageApi extends HttpServlet
 		{
 			GoogleAddressInformation addressInfoElement = addressInfo.get(0);
 			metadata.persistAddress(userPhoneNumber, addressInfoElement);
-			String formattedAddress = addressInfoElement.getFormattedAddress();
+			String formattedAddress = addressInfoElement.getFormattedAddress().trim();
 			mediaURI = Optional.of(mapper.getGoogleImageURI(formattedAddress));
 			response += " [" + formattedAddress + "]";
 		}
