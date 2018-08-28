@@ -42,11 +42,10 @@ public class MessageApi extends HttpServlet
 	private static LocationMapper mapper = new LocationMapper();
 	private static MapboxClient client = new MapboxClient();
 
-	/**
-	 * @throws IOException
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
+   /**
+    * @throws IOException
+    * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+    */
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException
 	{
