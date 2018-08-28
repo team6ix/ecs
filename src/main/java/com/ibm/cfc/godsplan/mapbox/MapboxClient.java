@@ -80,7 +80,7 @@ public class MapboxClient
     * @param featureId
     * @throws HttpException
     */
-   public void addPerson(String id, float xCoordinate, float yCoordinate)
+   public void addPerson(String id, double xCoordinate, double yCoordinate)
    {
       JsonObject jsonObject = new JsonObject();
       jsonObject.addProperty("id", id);

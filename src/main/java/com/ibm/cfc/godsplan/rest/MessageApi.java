@@ -20,6 +20,7 @@ import com.google.maps.errors.ApiException;
 import com.ibm.cfc.godsplan.assistant.WatsonAssistantBot;
 import com.ibm.cfc.godsplan.cloudant.CloudantPersistence;
 import com.ibm.cfc.godsplan.cloudant.model.ChatContext;
+import com.ibm.cfc.godsplan.mapbox.MapboxClient;
 import com.ibm.cfc.godsplan.maps.LocationMapper;
 import com.ibm.cfc.godsplan.maps.model.GoogleAddressInformation;
 import com.ibm.watson.developer_cloud.assistant.v1.model.Context;
@@ -39,6 +40,7 @@ public class MessageApi extends HttpServlet
 	private static final long serialVersionUID = 1L;
 	protected static final Logger logger = LoggerFactory.getLogger(MessageApi.class);
 	private static LocationMapper mapper = new LocationMapper();
+	private static MapboxClient client = new MapboxClient();
 
 	/**
 	 * @throws IOException
@@ -246,6 +248,7 @@ public class MessageApi extends HttpServlet
 		{
 			GoogleAddressInformation addressInfoElement = addressInfo.get(0);
 			metadata.persistAddress(userPhoneNumber, addressInfoElement);
+			client.addPerson(userPhoneNumber, addressInfoElement.getLongitude(), addressInfoElement.getLatitude());
 			String formattedAddress = addressInfoElement.getFormattedAddress().trim();
 			mediaURI = Optional.of(mapper.getGoogleImageURI(formattedAddress));
 			response += " [" + formattedAddress + "]";
