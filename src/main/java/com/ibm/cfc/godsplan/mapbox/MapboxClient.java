@@ -21,6 +21,8 @@ import java.util.Optional;
 import org.apache.http.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.google.maps.errors.ApiException;
 import com.ibm.cfc.godsplan.http.BasicHttpClient;
 import com.ibm.cfc.godsplan.http.BasicHttpClient.BasicHttpResponse;
@@ -47,6 +49,10 @@ public class MapboxClient
    /***/
    public static final String MAPBOX_API_TOKEN = System.getenv("MAPBOX_API_TOKEN");
    /***/
+   public static final String MAPBOX_USER = "team6ix";
+   /***/
+   public static final String MAPBOX_DATASET = "cjl565k8f0pc62wnxgggh6gc4";
+   /***/
    public static BasicHttpClient httpClient;
    /***/
    public final String FINAL_DESTINATION = "You have arrived at your destination";
@@ -67,19 +73,47 @@ public class MapboxClient
    }
 
    /**
-    * @return JSON Response from dataset command
+    * 
+    * @param id 
+    * @param xCoordinate 
+    * @param yCoordinate 
+    * @param featureId
     * @throws HttpException
     */
-   public String listDatasets() throws HttpException
+   public void addPerson(String id, float xCoordinate, float yCoordinate)
    {
-      Map<String, String> hashMap = new HashMap<String, String>()
+      JsonObject jsonObject = new JsonObject();
+      jsonObject.addProperty("id", id);
+      jsonObject.addProperty("type", "Feature");
+      
+      JsonObject geometryJson = new JsonObject();
+      geometryJson.addProperty("type", "Point");
+      
+      JsonObject propertiesJson = new JsonObject();
+      
+      JsonArray coordinates = new JsonArray();
+      coordinates.add(xCoordinate);
+      coordinates.add(yCoordinate);
+      geometryJson.add("coordinates", coordinates);
+      
+      jsonObject.add("geometry", geometryJson);
+      jsonObject.add("properties", propertiesJson);
+      
+      try
       {
-         {
-            put("access_token", MAPBOX_API_TOKEN);
-         }
-      };
-      BasicHttpResponse httpResponse = httpClient.executeGet("/datasets/v1/team6ix", hashMap);
-      return httpResponse.getEntity();
+         httpClient.executePut("/datasets/v1/" + MAPBOX_USER + "/" + MAPBOX_DATASET + "/features/" + id, jsonObject.toString(), getDefaultQueryParams());
+      }
+      catch (HttpException e)
+      {
+         e.printStackTrace();
+      }
+   }
+   
+   private Map<String, String> getDefaultQueryParams()
+   {
+      Map<String,String> map = new HashMap<>();
+      map.put("access_token", MAPBOX_API_TOKEN);
+      return map;
    }
 
    /**
@@ -186,7 +220,6 @@ public class MapboxClient
    public static void main(String args[]) throws HttpException, IOException, ApiException, InterruptedException
    {
       MapboxClient client = new MapboxClient();
-      System.out.println(client.listDatasets());
 
       LocationMapper mapper = new LocationMapper();
       Point o = mapper.getGeocodingCoordinates("8200 Warden Ave");
