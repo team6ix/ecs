@@ -82,6 +82,8 @@ public class MapboxClient
     */
    public void addPerson(String id, double xCoordinate, double yCoordinate)
    {
+      logger.info("Adding id {} to admin map with x coordinate {} and y coordinate {}", id, xCoordinate, yCoordinate);
+      
       JsonObject jsonObject = new JsonObject();
       jsonObject.addProperty("id", id);
       jsonObject.addProperty("type", "Feature");
@@ -105,7 +107,7 @@ public class MapboxClient
       }
       catch (HttpException e)
       {
-         e.printStackTrace();
+         logger.error("Could not save info to admin map.");
       }
    }
    
