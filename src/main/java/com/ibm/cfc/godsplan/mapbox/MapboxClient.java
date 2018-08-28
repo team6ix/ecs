@@ -45,7 +45,7 @@ public class MapboxClient
    /***/
    public static final String MAPBOX_URL = "api.mapbox.com";
    /***/
-   public static final int MAPBOX_PORT = 80;
+   public static final int MAPBOX_PORT = 443;
    /***/
    public static final String MAPBOX_API_TOKEN = System.getenv("MAPBOX_API_TOKEN");
    /***/
@@ -64,7 +64,7 @@ public class MapboxClient
    {
       try
       {
-         httpClient = new BasicHttpClient("http", MAPBOX_URL, MAPBOX_PORT);
+         httpClient = new BasicHttpClient("https", MAPBOX_URL, MAPBOX_PORT);
       }
       catch (HttpException e)
       {
