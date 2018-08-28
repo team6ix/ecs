@@ -26,7 +26,7 @@ public enum ResponsePosition
 	/** fourth response */
 	INJURY_CONFIRMATION("node_4_1534430386010"),
 	/***/
-	HAS_SPACE_IN_VEHICLE("node_4_1534459146359"),
+	HAS_SPACE_IN_VEHICLE("node_5_1534459204074"),
 	/***/
 	HAS_VEHICLE("node_2_1534459022264"),
 	/***/
