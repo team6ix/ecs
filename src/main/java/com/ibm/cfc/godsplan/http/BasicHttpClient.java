@@ -262,6 +262,7 @@ public class BasicHttpClient
 
    private URI buildUri(String path, Map<String, String> params) throws HttpException
    {
+      logger.info("Building URI for path:" + path);
       List<NameValuePair> paramPairs = new ArrayList<NameValuePair>();
       for(Entry<String, String> entry : params.entrySet())
       {
