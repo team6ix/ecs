@@ -28,7 +28,7 @@ public enum ResponsePosition
 	/***/
 	HAS_SPACE_IN_VEHICLE("node_2_1534459022264"),
 	/***/
-	HAS_VEHICLE("node_4_1534459146359"),
+	HAS_VEHICLE("node_1_1534458458160"),
 	/***/
 	OTHER("");
 
