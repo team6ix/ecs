@@ -69,7 +69,7 @@ public class ChatPersistence
      try (InputStream is = db.find(phoneNumber))
      {
         JsonElement doc = compose.jsonFromStream(is);
-        JsonObject json = compose.existingDocument(doc);
+        JsonObject json = doc.getAsJsonObject();
         json.add("context", contextJson);
         db.update(json);
      }
@@ -118,7 +118,7 @@ public class ChatPersistence
      try (InputStream is = db.find(phoneNumber);)
      {
         JsonElement doc = compose.jsonFromStream(is);
-        JsonObject json = compose.existingDocument(doc);
+        JsonObject json = doc.getAsJsonObject();
         db.remove(json);
      }
      catch (NoDocumentException e)

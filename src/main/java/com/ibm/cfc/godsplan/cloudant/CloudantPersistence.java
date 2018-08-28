@@ -105,6 +105,11 @@ public class CloudantPersistence
 		surveyDb.persistMustEvacuate(clientPhoneNumber, b);
 	}
 
+	/**
+	 * 
+	 * @param phoneNumber
+	 * @param b
+	 */
 	public void persistInjuryConfirmation(String phoneNumber, boolean b)
 	{
 		surveyDb.persistInjuryConfirmation(phoneNumber, b);
@@ -120,6 +125,11 @@ public class CloudantPersistence
 		surveyDb.persistHasVehicle(phoneNumber, b);
 	}
 
+	/**
+	 * 
+	 * @param phoneNumber
+	 * @param b
+	 */
 	public void persistHasSpace(String phoneNumber, boolean b)
 	{
 		surveyDb.persistHasSpace(phoneNumber, b);

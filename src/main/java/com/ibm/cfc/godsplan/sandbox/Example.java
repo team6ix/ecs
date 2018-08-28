@@ -2,8 +2,14 @@ package com.ibm.cfc.godsplan.sandbox;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-
+import java.util.List;
+import java.util.Optional;
 import com.google.maps.errors.ApiException;
+import com.ibm.cfc.godsplan.cloudant.CloudantPersistence;
+import com.ibm.cfc.godsplan.cloudant.model.LocationContext;
+import com.ibm.cfc.godsplan.cloudant.model.SurveyContext;
+import com.ibm.cfc.godsplan.maps.LocationMapper;
+import com.ibm.cfc.godsplan.maps.model.GoogleAddressInformation;
 
 public class Example
 {
@@ -25,12 +31,12 @@ public class Example
 		// PhoneNumber(SERVER_PHONE_NUMBER), resp).create();
 		//
 		// System.out.println(message.getSid());
-		/*
-		 * String rawAddress = "8200 Warden Ave"; LocationMapper mapper = new
-		 * LocationMapper(); List<GoogleAddressInformation> addresses =
-		 * mapper.getFormattedAddress(rawAddress); for (GoogleAddressInformation address
-		 * : addresses) { System.out.println(address); }
-		 */
+		
+		  String rawAddress = "8200 Warden Ave"; LocationMapper mapper = new
+		  LocationMapper(); List<GoogleAddressInformation> addresses =
+		  mapper.getFormattedAddress(rawAddress); for (GoogleAddressInformation address
+		  : addresses) { System.out.println(address); }
+		 
 		// CloudantPersistence p = new CloudantPersistence();
 		// p.persistHasSpace(CLIENT_PHONE_NUMBER, true);
 
@@ -40,19 +46,21 @@ public class Example
 		// System.out.println("Map of '" + rawAddress + "' can be found at '" +
 		// image.getAbsolutePath() + "'");
 
-		// CloudantPersistence p = new CloudantPersistence();
-		// p.removePhoneNumber(CLIENT_PHONE_NUMBER);
-		// p.persistAddress(CLIENT_PHONE_NUMBER, addresses.get(0));
-		// Optional<LocationContext> addressInfo =
-		// p.retrieveAddress(CLIENT_PHONE_NUMBER);
-		// System.out.println(addressInfo.get().getAddress().toString());
-		//
-		// p.persistAddressConfirmation(CLIENT_PHONE_NUMBER, true);
-		// p.persistMustEvacuate(CLIENT_PHONE_NUMBER, true);
-		// Optional<SurveyContext> context =
-		// p.retrieveSurveyContext(CLIENT_PHONE_NUMBER);
-		// System.out.println(context.get().toString());
-		// p.shutdown();
+		 CloudantPersistence p = new CloudantPersistence();
+		 p.removePhoneNumber(CLIENT_PHONE_NUMBER);
+		 p.persistAddress(CLIENT_PHONE_NUMBER, addresses.get(0));
+		 Optional<LocationContext> addressInfo =
+		 p.retrieveAddress(CLIENT_PHONE_NUMBER);
+		 System.out.println(addressInfo.get().getAddress().toString());
+		
+		 p.persistAddressConfirmation(CLIENT_PHONE_NUMBER, true);
+		 p.persistMustEvacuate(CLIENT_PHONE_NUMBER, true);
+		 p.persistHasSpace(CLIENT_PHONE_NUMBER, true);
+		 p.persistHasVehicle(CLIENT_PHONE_NUMBER, true);
+		 Optional<SurveyContext> context =
+		 p.retrieveSurveyContext(CLIENT_PHONE_NUMBER);
+		 System.out.println(context.get().toString());
+		 p.shutdown();
 
 		// String imageURI =
 		// mapper.getGoogleImageURI(addresses.get(0).getFormattedAddress());

@@ -35,6 +35,31 @@ public class LocationPersistence
     * Cloudant database that contains documents defined by {@link LocationContext}
     */
    public static final String LOCATION_CONTEXT_DB = "locationcontext";
+   
+   /**
+    * Field in {@link LocationContext} that represents {@link GoogleAddressInformation#getLongitude()}
+    */
+   public static final String LONGITUDE = "longitude";
+
+   /**
+    * Field in {@link LocationContext} that represents {@link GoogleAddressInformation#getLatitude()}
+    */
+   public static final String LATITUDE = "latitude";
+
+   /**
+    * Field in {@link LocationContext} that represents {@link GoogleAddressInformation#getFormattedAddress()}
+    */
+   public static final String FORMATTED_ADDRESS = "formattedAddress";
+
+   /**
+    * Field in {@link LocationContext} that represents {@link LocationContext#getAddressConfirmed()}
+    */
+   public static final String CONFIRMED_ADDRESS = "confirmedAddress";
+
+   /**
+    * Field in {@link LocationContext} that holds data in {@link GoogleAddressInformation}
+    */
+   public static final String LOCATION = "location";
 
    protected static final Logger logger = LoggerFactory.getLogger(LocationPersistence.class);
 
@@ -65,14 +90,14 @@ public class LocationPersistence
       try (InputStream is = db.find(phoneNumber);)
       {
          JsonElement doc = compose.jsonFromStream(is);
-         JsonObject json = compose.existingDocument(doc);
-         compose.locationDocument(address, json);
+         JsonObject json = doc.getAsJsonObject();
+         addLocation(address,json);
          db.update(json);
       }
       catch (NoDocumentException e)
       {
          JsonObject json = compose.blankDocument(phoneNumber);
-         compose.locationDocument(address, json);
+         addLocation(address, json);
          db.save(json);
       }
       catch (IOException e1)
@@ -115,8 +140,8 @@ public class LocationPersistence
       try (InputStream is = db.find(phoneNumber);)
       {
          JsonElement doc = compose.jsonFromStream(is);
-         JsonObject json = compose.existingLocationDocument(doc);
-         json.addProperty(JsonDocumentComposer.CONFIRMED_ADDRESS, confirm);
+         JsonObject json = doc.getAsJsonObject();
+         json.addProperty(CONFIRMED_ADDRESS, confirm);
          db.update(json);
       }
       catch (NoDocumentException e)
@@ -139,7 +164,7 @@ public class LocationPersistence
       try (InputStream is = db.find(phoneNumber);)
       {
          JsonElement doc = compose.jsonFromStream(is);
-         JsonObject json = compose.existingDocument(doc);
+         JsonObject json = doc.getAsJsonObject();
          db.remove(json);
       }
       catch (NoDocumentException e)
@@ -150,5 +175,20 @@ public class LocationPersistence
       {
          e1.printStackTrace();
       }
+   }
+   
+   /**
+    * 
+    * @param address
+    * @param json
+    */
+   public void addLocation(GoogleAddressInformation address, JsonObject json)
+   {
+      JsonObject location = new JsonObject();
+      location.addProperty(FORMATTED_ADDRESS, address.getFormattedAddress());
+      location.addProperty(LATITUDE, address.getLatitude());
+      location.addProperty(LONGITUDE, address.getLongitude());
+      json.add(LOCATION, location);
+      json.addProperty(CONFIRMED_ADDRESS, false);
    }
 }

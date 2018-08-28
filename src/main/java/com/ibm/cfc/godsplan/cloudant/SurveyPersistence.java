@@ -121,7 +121,7 @@ public class SurveyPersistence
 		try (InputStream is = db.find(phoneNumber);)
 		{
 			JsonElement doc = compose.jsonFromStream(is);
-			JsonObject json = compose.existingDocument(doc);
+         JsonObject json = doc.getAsJsonObject();
 			db.remove(json);
 		}
 		catch (NoDocumentException e)
