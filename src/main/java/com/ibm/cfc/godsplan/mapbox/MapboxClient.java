@@ -103,7 +103,11 @@ public class MapboxClient
       
       try
       {
-         httpClient.executePut("/datasets/v1/" + MAPBOX_USER + "/" + MAPBOX_DATASET + "/features/" + id, jsonObject.toString(), getDefaultQueryParams());
+         BasicHttpResponse response = httpClient.executePut("/datasets/v1/" + MAPBOX_USER + "/" + MAPBOX_DATASET + "/features/" + id, jsonObject.toString(), getDefaultQueryParams());
+         if(response.getStatusCode() != 200)
+         {
+            logger.error("Received error from MapboxAPI: {}" + response.getEntity());
+         }
       }
       catch (HttpException e)
       {
