@@ -107,7 +107,7 @@ public class MapboxClient
       }
       catch (HttpException e)
       {
-         logger.error("Could not save info to admin map.");
+         logger.error("Could not save info to admin map.", e);
       }
    }
    
