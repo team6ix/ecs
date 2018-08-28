@@ -161,6 +161,9 @@ public class BasicHttpClient
     */
    public BasicHttpResponse executePut(String path, String body, Map<String, String> params) throws HttpException
    {
+      logger.info("Executing path {}", path);
+      logger.info("Executing body {}", body);
+      logger.info("Executing params {}", params);
       try
       {
          URI uri = buildUri(path, params);
@@ -262,7 +265,6 @@ public class BasicHttpClient
 
    private URI buildUri(String path, Map<String, String> params) throws HttpException
    {
-      logger.info("Building URI for path:" + path);
       List<NameValuePair> paramPairs = new ArrayList<NameValuePair>();
       for(Entry<String, String> entry : params.entrySet())
       {
