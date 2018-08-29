@@ -33,7 +33,7 @@ public class SurveyPersistence
 	/**
 	 * Cloudant database that contains documents defined by {@link SurveyContext}
 	 */
-	public static final String SURVEY_CONTEXT_DB = "surveycontext";
+	public static final String DB = "surveycontext";
 
 	protected static final Logger logger = LoggerFactory.getLogger(SurveyPersistence.class);
 

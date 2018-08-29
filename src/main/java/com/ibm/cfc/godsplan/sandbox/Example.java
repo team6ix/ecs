@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import com.google.maps.errors.ApiException;
 import com.ibm.cfc.godsplan.cloudant.CloudantPersistence;
+import com.ibm.cfc.godsplan.cloudant.Coordinates;
 import com.ibm.cfc.godsplan.cloudant.model.LocationContext;
 import com.ibm.cfc.godsplan.cloudant.model.SurveyContext;
 import com.ibm.cfc.godsplan.maps.LocationMapper;
@@ -60,6 +61,9 @@ public class Example
 		 Optional<SurveyContext> context =
 		 p.retrieveSurveyContext(CLIENT_PHONE_NUMBER);
 		 System.out.println(context.get().toString());
+		 
+		 p.persistFireLocation("1", new Coordinates(1,2));
+		 p.persistShelterLocation("1", addresses.get(0));
 		 p.shutdown();
 
 		// String imageURI =

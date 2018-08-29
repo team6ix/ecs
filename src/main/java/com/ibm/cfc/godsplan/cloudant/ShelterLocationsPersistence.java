@@ -25,16 +25,16 @@ import com.ibm.cfc.godsplan.cloudant.model.LocationContext;
 import com.ibm.cfc.godsplan.maps.model.GoogleAddressInformation;
 
 /**
- * Responsible for persisting information related to chat context. Stores documents in {@link #DB}.
+ * Responsible for persisting information related to chat context. Stores documents in {@link #LOCATION_CONTEXT_DB}.
  * 
  * See {@link LocationContext} for the data stored in this database.
  */
-public class LocationPersistence
+public class ShelterLocationsPersistence
 {
    /**
     * Cloudant database that contains documents defined by {@link LocationContext}
     */
-   public static final String DB = "locationcontext";
+   public static final String DB = "shelterlocations";
    
    /**
     * Field in {@link LocationContext} that represents {@link GoogleAddressInformation#getLongitude()}
@@ -54,14 +54,14 @@ public class LocationPersistence
    /**
     * Field in {@link LocationContext} that represents {@link LocationContext#getAddressConfirmed()}
     */
-   public static final String CONFIRMED_ADDRESS = "confirmedAddress";
+   public static final String CAN_ACCEPT_MORE = "canAcceptMore";
 
    /**
     * Field in {@link LocationContext} that holds data in {@link GoogleAddressInformation}
     */
    public static final String LOCATION = "location";
 
-   protected static final Logger logger = LoggerFactory.getLogger(LocationPersistence.class);
+   protected static final Logger logger = LoggerFactory.getLogger(ShelterLocationsPersistence.class);
 
    
    Database db;
@@ -72,7 +72,7 @@ public class LocationPersistence
     * 
     * @param locationDb
     */
-   public LocationPersistence(Database locationDb)
+   public ShelterLocationsPersistence(Database locationDb)
    {
       this.db = locationDb;
       compose = new JsonDocumentComposer();
@@ -81,13 +81,13 @@ public class LocationPersistence
 
    /**
     * 
-    * @param phoneNumber
+    * @param shelterId
     * @param address
     */
-   public void persist(String phoneNumber, GoogleAddressInformation address)
+   public void persist(String shelterId, GoogleAddressInformation address)
    {
-      logger.info("saving address information for '{}'", phoneNumber);
-      try (InputStream is = db.find(phoneNumber);)
+      logger.info("saving address information for '{}'", shelterId);
+      try (InputStream is = db.find(shelterId);)
       {
          JsonElement doc = compose.jsonFromStream(is);
          JsonObject json = doc.getAsJsonObject();
@@ -96,7 +96,7 @@ public class LocationPersistence
       }
       catch (NoDocumentException e)
       {
-         JsonObject json = compose.blankDocument(phoneNumber);
+         JsonObject json = compose.blankDocument(shelterId);
          addLocation(address, json);
          db.save(json);
       }
@@ -130,18 +130,18 @@ public class LocationPersistence
    
    /**
     * 
-    * @param phoneNumber
-    * @param confirm
+    * @param shelterId
+    * @param canAcceptMore
     *           true if user confirmed address is correct, false if user says address is incorrect
     */
-   public void persistAddressConfirmation(String phoneNumber, boolean confirm)
+   public void persistCanAcceptMore(String shelterId, boolean canAcceptMore)
    {
-      logger.info("saving address confirmation for '{}'", phoneNumber);
-      try (InputStream is = db.find(phoneNumber);)
+      logger.info("saving address confirmation for '{}'", shelterId);
+      try (InputStream is = db.find(shelterId);)
       {
          JsonElement doc = compose.jsonFromStream(is);
          JsonObject json = doc.getAsJsonObject();
-         json.addProperty(CONFIRMED_ADDRESS, confirm);
+         json.addProperty("canAcceptMore", canAcceptMore);
          db.update(json);
       }
       catch (NoDocumentException e)
@@ -156,12 +156,12 @@ public class LocationPersistence
    
    /**
     * 
-    * @param phoneNumber
+    * @param shelterId
     */
-   public void remove(String phoneNumber)
+   public void remove(String shelterId)
    {
-      logger.info("removing location context for '{}'", phoneNumber);
-      try (InputStream is = db.find(phoneNumber);)
+      logger.info("removing location context for '{}'", shelterId);
+      try (InputStream is = db.find(shelterId);)
       {
          JsonElement doc = compose.jsonFromStream(is);
          JsonObject json = doc.getAsJsonObject();
@@ -169,7 +169,7 @@ public class LocationPersistence
       }
       catch (NoDocumentException e)
       {
-         logger.info("no location context found for '{}'", phoneNumber);
+         logger.info("no location context found for '{}'", shelterId);
       }
       catch (IOException e1)
       {
@@ -189,6 +189,6 @@ public class LocationPersistence
       location.addProperty(LATITUDE, address.getLatitude());
       location.addProperty(LONGITUDE, address.getLongitude());
       json.add(LOCATION, location);
-      json.addProperty(CONFIRMED_ADDRESS, false);
+      json.addProperty(CAN_ACCEPT_MORE, true);
    }
 }
