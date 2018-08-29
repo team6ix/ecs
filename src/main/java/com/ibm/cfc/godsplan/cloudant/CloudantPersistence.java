@@ -189,7 +189,7 @@ public class CloudantPersistence
 	   return fireLocationsDb.retrieve(id);
 	}
 	
-	public List<FireLocationContext> retrieveAll()
+	public List<FireLocationContext> retrieveDisasterLocations()
 	{
 	   return fireLocationsDb.retrieveAll();
 	}
