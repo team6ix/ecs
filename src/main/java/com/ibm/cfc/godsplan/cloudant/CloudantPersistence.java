@@ -173,7 +173,7 @@ public class CloudantPersistence
 	 * @param id
 	 * @param coordinates
 	 */
-	public void persistFireLocation(String id, Coordinates coordinates)
+	public void persistFireLocation(int id, Coordinates coordinates)
 	{
 	   fireLocationsDb.persist(id, coordinates);
 	}

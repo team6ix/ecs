@@ -61,13 +61,14 @@ public class FireLocationsPersistence
     * @param id
     * @param coordinates
     */
-   public void persist(String id, Coordinates coordinates)
+   public void persist(int id, Coordinates coordinates)
    {
       logger.info("saving fire location  for '{}'", id);
+      String idString = Integer.toString(id);
       JsonObject jsonCoords = new JsonObject();
       jsonCoords.addProperty("latitude", coordinates.getLatitude());
       jsonCoords.addProperty("longitude", coordinates.getLongitude());
-      try (InputStream is = db.find(id))
+      try (InputStream is = db.find(idString))
       {
          JsonElement doc = compose.jsonFromStream(is);
          JsonObject json = doc.getAsJsonObject();
@@ -76,7 +77,7 @@ public class FireLocationsPersistence
       }
       catch (NoDocumentException e)
       {
-         JsonObject json = compose.blankDocument(id);
+         JsonObject json = compose.blankDocument(idString);
          json.add("coordinates", jsonCoords);
          db.save(json);
       }
