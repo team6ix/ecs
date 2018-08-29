@@ -17,7 +17,7 @@ import com.google.maps.errors.ApiException;
 import com.ibm.cfc.godsplan.assistant.WatsonAssistantBot;
 import com.ibm.cfc.godsplan.cloudant.CloudantPersistence;
 import com.ibm.cfc.godsplan.cloudant.model.ChatContext;
-import com.ibm.cfc.godsplan.cloudant.model.FireLocationContext;
+import com.ibm.cfc.godsplan.cloudant.model.DisasterLocationContext;
 import com.ibm.cfc.godsplan.cloudant.model.LocationContext;
 import com.ibm.cfc.godsplan.disaster.DisasterProximityCalculator;
 import com.ibm.cfc.godsplan.mapbox.MapboxClient;
@@ -252,8 +252,8 @@ public class MessageApi extends HttpServlet
    private List<Point> getDisasterPoints(CloudantPersistence metadata)
    {
       List<Point> disasterPoints = new ArrayList<>();
-      List<FireLocationContext> disasterLocations = metadata.retrieveDisasterLocations();
-      for (FireLocationContext location : disasterLocations)
+      List<DisasterLocationContext> disasterLocations = metadata.retrieveDisasterLocations();
+      for (DisasterLocationContext location : disasterLocations)
       {
          disasterPoints.add(
                Point.fromLngLat(location.getCoordinates().getLongitude(), location.getCoordinates().getLatitude()));

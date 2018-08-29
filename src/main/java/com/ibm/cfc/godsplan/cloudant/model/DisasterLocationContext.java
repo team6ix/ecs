@@ -6,7 +6,7 @@ import com.ibm.cfc.godsplan.cloudant.Coordinates;
  * POJO for fire locations database documents
  *
  */
-public class FireLocationContext
+public class DisasterLocationContext
 {
    private final Coordinates coordinates;
    private final String _id;
@@ -16,7 +16,7 @@ public class FireLocationContext
     * @param coordinates
     * @param id
     */
-   public FireLocationContext(Coordinates coordinates, String id)
+   public DisasterLocationContext(Coordinates coordinates, String id)
    {
       super();
       this.coordinates = coordinates;
