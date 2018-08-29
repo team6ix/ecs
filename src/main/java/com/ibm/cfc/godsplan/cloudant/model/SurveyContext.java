@@ -9,16 +9,16 @@ public class SurveyContext
 	private Boolean mustEvacuate;
 	private Boolean hasVehicle;
 	private Boolean hasSpace;
-	private Boolean isInjured;
+	private Boolean injuryConfirmed;
 
 	public Boolean getIsInjured()
 	{
-		return isInjured;
+		return injuryConfirmed;
 	}
 
 	public void setIsInjured(Boolean isInjured)
 	{
-		this.isInjured = isInjured;
+		this.injuryConfirmed = isInjured;
 	}
 
 	/**
