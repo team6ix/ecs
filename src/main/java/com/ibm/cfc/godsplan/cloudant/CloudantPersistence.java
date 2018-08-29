@@ -2,13 +2,12 @@ package com.ibm.cfc.godsplan.cloudant;
 
 import java.io.IOException;
 import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.cloudant.client.api.ClientBuilder;
 import com.cloudant.client.api.CloudantClient;
 import com.ibm.cfc.godsplan.cloudant.model.ChatContext;
+import com.ibm.cfc.godsplan.cloudant.model.FireLocationContext;
 import com.ibm.cfc.godsplan.cloudant.model.LocationContext;
 import com.ibm.cfc.godsplan.cloudant.model.SurveyContext;
 import com.ibm.cfc.godsplan.maps.model.GoogleAddressInformation;
@@ -22,6 +21,8 @@ public class CloudantPersistence
 	private ChatPersistence chatDb;
 	private LocationPersistence locationDb;
 	private SurveyPersistence surveyDb;
+	private ShelterLocationsPersistence shelterLocationsDb;
+	private FireLocationsPersistence fireLocationsDb;
 
 	private CloudantClient client;
 
@@ -36,9 +37,11 @@ public class CloudantPersistence
 				.username("c008a85f-96b2-4d29-98c7-eedff0e86b1f-bluemix")
 				.password("39965f7b72264bcd70f7bc27de159a629da46f2ac7a4f63108fa8d9b150d8c22").build();
 
-		chatDb = new ChatPersistence(client.database(ChatPersistence.CHAT_CONTEXT_DB, false));
-		locationDb = new LocationPersistence(client.database(LocationPersistence.LOCATION_CONTEXT_DB, false));
-		surveyDb = new SurveyPersistence(client.database(SurveyPersistence.SURVEY_CONTEXT_DB, false));
+		chatDb = new ChatPersistence(client.database(ChatPersistence.DB, false));
+		locationDb = new LocationPersistence(client.database(LocationPersistence.DB, false));
+		surveyDb = new SurveyPersistence(client.database(SurveyPersistence.DB, false));
+		shelterLocationsDb = new ShelterLocationsPersistence(client.database(ShelterLocationsPersistence.DB, false));
+		fireLocationsDb = new FireLocationsPersistence(client.database(FireLocationsPersistence.DB, false));
 
 	}
 
@@ -147,6 +150,46 @@ public class CloudantPersistence
 
 	/**
 	 * 
+	 * @param shelterId
+	 * @param address
+	 */
+	public void persistShelterLocation(String shelterId, GoogleAddressInformation address)
+	{
+	   shelterLocationsDb.persist(shelterId, address);
+	}
+	
+	/**
+	 * 
+	 * @param shelterId
+	 * @param b
+	 */
+	public void persistShelterCanAcceptMore(String shelterId, boolean b)
+	{
+	   shelterLocationsDb.persistCanAcceptMore(shelterId, b);
+	}
+	
+	/**
+	 * 
+	 * @param id
+	 * @param coordinates
+	 */
+	public void persistFireLocation(String id, Coordinates coordinates)
+	{
+	   fireLocationsDb.persist(id, coordinates);
+	}
+	
+	/**
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public Optional<FireLocationContext> retrieve(String id)
+	{
+	   return fireLocationsDb.retrieve(id);
+	}
+	
+	/**
+	 * 
 	 * @param phoneNumber
 	 */
 	public void removeChatContext(String phoneNumber)
@@ -181,6 +224,15 @@ public class CloudantPersistence
 		chatDb.remove(phoneNumber);
 		locationDb.remove(phoneNumber);
 		surveyDb.remove(phoneNumber);
+	}
+	
+	/**
+	 * 
+	 * @param shelterId
+	 */
+	public void removeShelterLocation(String shelterId)
+	{
+	   shelterLocationsDb.remove(shelterId);
 	}
 
 	/**

@@ -25,7 +25,7 @@ import com.ibm.cfc.godsplan.cloudant.model.ChatContext;
 import com.ibm.watson.developer_cloud.assistant.v1.model.Context;
 
 /**
- * Responsible for persisting information related to chat context. Stores documents in {@link #CHAT_CONTEXT_DB}.
+ * Responsible for persisting information related to chat context. Stores documents in {@link #DB}.
  * 
  * See {@link ChatContext} for the data stored in this database.
  */
@@ -35,7 +35,7 @@ public class ChatPersistence
    /**
     * Cloudant database that contains documents defined by {@link ChatContext}
     */
-   public static final String CHAT_CONTEXT_DB = "chatcontext";
+   public static final String DB = "chatcontext";
 
    protected static final Logger logger = LoggerFactory.getLogger(ChatPersistence.class);
 

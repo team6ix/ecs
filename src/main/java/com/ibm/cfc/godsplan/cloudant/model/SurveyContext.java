@@ -61,11 +61,19 @@ public class SurveyContext
 		this.hasVehicle = hasVehicle;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public Boolean getHasSpace()
 	{
 		return this.hasSpace;
 	}
 
+	/**
+	 * 
+	 * @param hasSpace
+	 */
 	public void setHasSpace(Boolean hasSpace)
 	{
 		this.hasSpace = hasSpace;
