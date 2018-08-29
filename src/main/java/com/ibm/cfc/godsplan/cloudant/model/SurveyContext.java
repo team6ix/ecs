@@ -97,7 +97,7 @@ public class SurveyContext
 	public String toString()
 	{
 		return "SurveyContext [get_id()=" + get_id() + ", getMustEvacuate()=" + getMustEvacuate() + ", getHasVehicle()="
-				+ getHasVehicle() + ", getHasSpace()=" + getHasSpace() + "]";
+				+ getHasVehicle() + ", getHasSpace()=" + getHasSpace() + ", getIsInjured()=" + getIsInjured() + "]";
 	}
 
 }
