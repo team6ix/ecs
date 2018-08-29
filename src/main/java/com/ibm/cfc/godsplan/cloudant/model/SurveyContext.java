@@ -9,6 +9,17 @@ public class SurveyContext
 	private Boolean mustEvacuate;
 	private Boolean hasVehicle;
 	private Boolean hasSpace;
+	private Boolean injuryConfirmed;
+
+	public Boolean getIsInjured()
+	{
+		return injuryConfirmed;
+	}
+
+	public void setIsInjured(Boolean isInjured)
+	{
+		this.injuryConfirmed = isInjured;
+	}
 
 	/**
 	 * @return the _id
@@ -86,7 +97,7 @@ public class SurveyContext
 	public String toString()
 	{
 		return "SurveyContext [get_id()=" + get_id() + ", getMustEvacuate()=" + getMustEvacuate() + ", getHasVehicle()="
-				+ getHasVehicle() + ", getHasSpace()=" + getHasSpace() + "]";
+				+ getHasVehicle() + ", getHasSpace()=" + getHasSpace() + ", getIsInjured()=" + getIsInjured() + "]";
 	}
 
 }
