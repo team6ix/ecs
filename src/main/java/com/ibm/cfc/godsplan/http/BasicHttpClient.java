@@ -161,6 +161,9 @@ public class BasicHttpClient
     */
    public BasicHttpResponse executePut(String path, String body, Map<String, String> params) throws HttpException
    {
+      logger.info("Executing path {}", path);
+      logger.info("Executing body {}", body);
+      logger.info("Executing params {}", params);
       try
       {
          URI uri = buildUri(path, params);
