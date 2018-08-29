@@ -16,8 +16,8 @@ package com.ibm.cfc.godsplan.cloudant;
  */
 public class Coordinates
 {
-   private long latitude;
-   private long longitude;
+   private double latitude;
+   private double longitude;
    
    
    /**
@@ -25,7 +25,7 @@ public class Coordinates
     * @param latitude
     * @param longitude
     */
-   public Coordinates(long latitude, long longitude)
+   public Coordinates(double latitude, double longitude)
    {
       super();
       this.latitude = latitude;
@@ -35,17 +35,24 @@ public class Coordinates
    /**
     * @return the latitude
     */
-   public long getLatitude()
+   public double getLatitude()
    {
       return latitude;
    }
    /**
     * @return the longitude
     */
-   public long getLongitude()
+   public double getLongitude()
    {
       return longitude;
    }
-   
-   
+
+   /**
+    * 
+    */
+   @Override
+   public String toString()
+   {
+      return "Coordinates [getLatitude()=" + getLatitude() + ", getLongitude()=" + getLongitude() + "]";
+   }
 }

@@ -13,17 +13,19 @@ package com.ibm.cfc.godsplan.cloudant;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.cloudant.client.api.Database;
+import com.cloudant.client.api.views.AllDocsRequestBuilder;
 import com.cloudant.client.org.lightcouch.NoDocumentException;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ibm.cfc.godsplan.cloudant.model.ChatContext;
 import com.ibm.cfc.godsplan.cloudant.model.FireLocationContext;
-import com.ibm.watson.developer_cloud.assistant.v1.model.Context;
 
 /**
  * Responsible for persisting information related to chat context. Stores documents in {@link #DB}.
@@ -61,13 +63,14 @@ public class FireLocationsPersistence
     * @param id
     * @param coordinates
     */
-   public void persist(String id, Coordinates coordinates)
+   public void persist(int id, Coordinates coordinates)
    {
       logger.info("saving fire location  for '{}'", id);
+      String idString = Integer.toString(id);
       JsonObject jsonCoords = new JsonObject();
       jsonCoords.addProperty("latitude", coordinates.getLatitude());
       jsonCoords.addProperty("longitude", coordinates.getLongitude());
-      try (InputStream is = db.find(id))
+      try (InputStream is = db.find(idString))
       {
          JsonElement doc = compose.jsonFromStream(is);
          JsonObject json = doc.getAsJsonObject();
@@ -76,7 +79,7 @@ public class FireLocationsPersistence
       }
       catch (NoDocumentException e)
       {
-         JsonObject json = compose.blankDocument(id);
+         JsonObject json = compose.blankDocument(idString);
          json.add("coordinates", jsonCoords);
          db.save(json);
       }
@@ -107,6 +110,35 @@ public class FireLocationsPersistence
       return fireLocationContext;
    }
 
+   /**
+    * 
+    * @return a list of all fire locations
+    */
+   public List<FireLocationContext> retrieveAll()
+   {
+      AllDocsRequestBuilder builder = db.getAllDocsRequestBuilder();
+      List<FireLocationContext> fireLocations = new ArrayList<>();
+      try
+      {
+         List<String> ids;
+         ids = builder.build().getResponse().getDocIds();
+
+         for (String id : ids)
+         {
+            Optional<FireLocationContext> fireLocation = retrieve(id);
+            if (fireLocation.isPresent())
+            {
+               fireLocations.add(fireLocation.get());
+            }
+         }
+      }
+      catch (IOException e)
+      {
+         e.printStackTrace();
+      }
+
+      return fireLocations;
+   }
    /**
     * 
     * @param id
