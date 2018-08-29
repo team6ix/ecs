@@ -23,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.google.maps.errors.ApiException;
 import com.ibm.cfc.godsplan.disaster.DisasterInformation;
 import com.ibm.cfc.godsplan.disaster.DisasterProximityCalculator;
@@ -49,9 +51,13 @@ public class MapboxClient
    /***/
    public static final String MAPBOX_URL = "api.mapbox.com";
    /***/
-   public static final int MAPBOX_PORT = 80;
+   public static final int MAPBOX_PORT = 443;
    /***/
    public static final String MAPBOX_API_TOKEN = System.getenv("MAPBOX_API_TOKEN");
+   /***/
+   public static final String MAPBOX_USER = "team6ix";
+   /***/
+   public static final String MAPBOX_DATASET = "cjl565k8f0pc62wnxgggh6gc4";
    /***/
    public static BasicHttpClient httpClient;
    /***/
@@ -64,7 +70,7 @@ public class MapboxClient
    {
       try
       {
-         httpClient = new BasicHttpClient("http", MAPBOX_URL, MAPBOX_PORT);
+         httpClient = new BasicHttpClient("https", MAPBOX_URL, MAPBOX_PORT);
       }
       catch (HttpException e)
       {
@@ -73,19 +79,55 @@ public class MapboxClient
    }
 
    /**
-    * @return JSON Response from dataset command
+    * 
+    * @param id
+    * @param xCoordinate
+    * @param yCoordinate
+    * @param featureId
     * @throws HttpException
     */
-   public String listDatasets() throws HttpException
+   public void addPerson(String id, double xCoordinate, double yCoordinate)
    {
-      Map<String, String> hashMap = new HashMap<String, String>()
+      logger.info("Adding id {} to admin map with x coordinate {} and y coordinate {}", id, xCoordinate, yCoordinate);
+
+      JsonObject jsonObject = new JsonObject();
+      jsonObject.addProperty("id", id);
+      jsonObject.addProperty("type", "Feature");
+
+      JsonObject geometryJson = new JsonObject();
+      geometryJson.addProperty("type", "Point");
+
+      JsonObject propertiesJson = new JsonObject();
+
+      JsonArray coordinates = new JsonArray();
+      coordinates.add(xCoordinate);
+      coordinates.add(yCoordinate);
+      geometryJson.add("coordinates", coordinates);
+
+      jsonObject.add("geometry", geometryJson);
+      jsonObject.add("properties", propertiesJson);
+
+      try
       {
+         BasicHttpResponse response = httpClient.executePut(
+               "/datasets/v1/" + MAPBOX_USER + "/" + MAPBOX_DATASET + "/features/" + id, jsonObject.toString(),
+               getDefaultQueryParams());
+         if (response.getStatusCode() != 200)
          {
-            put("access_token", MAPBOX_API_TOKEN);
+            logger.error("Received error from MapboxAPI: {}" + response.getEntity());
          }
-      };
-      BasicHttpResponse httpResponse = httpClient.executeGet("/datasets/v1/team6ix", hashMap);
-      return httpResponse.getEntity();
+      }
+      catch (HttpException e)
+      {
+         logger.error("Could not save info to admin map.", e);
+      }
+   }
+
+   private Map<String, String> getDefaultQueryParams()
+   {
+      Map<String, String> map = new HashMap<>();
+      map.put("access_token", MAPBOX_API_TOKEN);
+      return map;
    }
 
    /**
@@ -202,12 +244,7 @@ public class MapboxClient
       {
          System.out.println(stp);
       }
-      //-79.338368, 43.848631
+
       System.out.println(gson.toJson(infomein.getRouteDetails()));
-      //
-      //      Distance: 1841.4
-      //      Turn right onto Yorktech Drive, for 1,097.9 meters.
-      //      Turn right onto Rodick Road, for 165 meters.
-      //      Turn left onto Fairburn Drive, for 107.7 meters.
    }
 }
