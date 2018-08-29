@@ -40,4 +40,15 @@ public class FireLocationContext
    {
       return _id;
    }
+
+   /**
+    * 
+    */
+   @Override
+   public String toString()
+   {
+      return "FireLocationContext [getCoordinates()=" + getCoordinates() + ", getId()=" + getId() + "]";
+   }
+   
+   
 }

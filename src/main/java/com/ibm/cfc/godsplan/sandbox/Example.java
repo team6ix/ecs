@@ -7,6 +7,7 @@ import java.util.Optional;
 import com.google.maps.errors.ApiException;
 import com.ibm.cfc.godsplan.cloudant.CloudantPersistence;
 import com.ibm.cfc.godsplan.cloudant.Coordinates;
+import com.ibm.cfc.godsplan.cloudant.model.FireLocationContext;
 import com.ibm.cfc.godsplan.cloudant.model.LocationContext;
 import com.ibm.cfc.godsplan.cloudant.model.SurveyContext;
 import com.ibm.cfc.godsplan.maps.LocationMapper;
@@ -63,6 +64,8 @@ public class Example
 		 System.out.println(context.get().toString());
 		 
 		 p.persistFireLocation(1, new Coordinates(1,2));
+		 List<FireLocationContext> l = p.retrieveAll();
+		 l.forEach(e -> System.out.println(e));
 		 p.persistShelterLocation("1", addresses.get(0));
 		 p.shutdown();
 

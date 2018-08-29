@@ -46,6 +46,13 @@ public class Coordinates
    {
       return longitude;
    }
-   
-   
+
+   /**
+    * 
+    */
+   @Override
+   public String toString()
+   {
+      return "Coordinates [getLatitude()=" + getLatitude() + ", getLongitude()=" + getLongitude() + "]";
+   }
 }
