@@ -23,7 +23,7 @@ import com.mapbox.geojson.Point;
 public class DisasterProximityCalculator
 {
    private static Logger logger = LoggerFactory.getLogger(DisasterProximityCalculator.class);
-   private List<Point> disasterPoints = DisasterInformation.getInstance().getDisasterPoints();
+   private final List<Point> disasterPoints = DisasterInformation.getInstance().getDisasterPoints();
    private static List<Point> requiredWayPoints = new ArrayList<>();
    private Integer dangerPointsEast = 0;
    private Integer dangerPointsWest = 0;
@@ -36,7 +36,7 @@ public class DisasterProximityCalculator
 
    /**
     * Calculates a disaster proximity data to provided point
-    * 
+    *
     * @param currentPoint
     *           point of interest
     */
@@ -48,7 +48,7 @@ public class DisasterProximityCalculator
    }
 
    /**
-    * 
+    *
     * @param p
     *           point of interest
     * @return true if point of interest is within a danger zone
@@ -100,7 +100,14 @@ public class DisasterProximityCalculator
             dangerPointsSouth, dangerPointsEast, dangerPointsWest);
    }
 
-   private boolean isPointWithinDisasterZone(Point p, Point dp)
+   /**
+    * @param p
+    *           the point to query if it is within DISASTER_RADIUS of dp
+    * @param dp
+    *           the center point of the disaster.
+    * @return true if p is within DISASTER_RADIUS of dp
+    */
+   public boolean isPointWithinDisasterZone(Point p, Point dp)
    {
       final int R = 6371; // Radius of the earth
 
@@ -131,7 +138,7 @@ public class DisasterProximityCalculator
    }
 
    /**
-    * 
+    *
     * @return true if current point is within a listed disaster zone
     */
    public boolean getIsWithinDisasterZone()
@@ -140,7 +147,7 @@ public class DisasterProximityCalculator
    }
 
    /**
-    * 
+    *
     * @return list of required waypoints
     */
    public List<Point> getWaypoints()
