@@ -51,16 +51,15 @@ public class MessageApi extends HttpServlet
    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException
    {
       logger.trace("POST request: {}", request);
+      Instant startTime = Instant.now();
+      CloudantPersistence metadata = new CloudantPersistence();
+      WatsonAssistantBot bot = new WatsonAssistantBot();
+
+      Optional<String> smsTxtBody = parseUserInput(request);
+      Optional<String> smsPhoneNumber = parsePhoneNumber(request);
+      validateInput(smsTxtBody, smsPhoneNumber);
       try
       {
-         Instant startTime = Instant.now();
-         CloudantPersistence metadata = new CloudantPersistence();
-         WatsonAssistantBot bot = new WatsonAssistantBot();
-
-         Optional<String> smsTxtBody = parseUserInput(request);
-         Optional<String> smsPhoneNumber = parsePhoneNumber(request);
-         validateInput(smsTxtBody, smsPhoneNumber);
-
          QueryResponse queryResponse = processQuery(metadata, bot, smsTxtBody.get(), smsPhoneNumber.get());
          String twiml = generateTwiml(queryResponse.getResponse(), queryResponse.getMediaURI());
          sendTwimlResponse(response, twiml);
@@ -69,7 +68,11 @@ public class MessageApi extends HttpServlet
       }
       catch (Exception e)
       {
-         logger.error("Uncaught Exception", e);
+         logger.error("Uncaught Exception, clearing user metadata", e);
+         if (smsTxtBody.isPresent())
+         {
+            clearMetadata(metadata, smsTxtBody.get());
+         }
          throw e;
       }
    }
@@ -246,7 +249,7 @@ public class MessageApi extends HttpServlet
 
    private Point getUserLocationPoint(LocationContext userAddress)
    {
-      return Point.fromLngLat(userAddress.getAddress().getLongitude(), userAddress.getAddress().getLongitude());
+      return Point.fromLngLat(userAddress.getAddress().getLongitude(), userAddress.getAddress().getLatitude());
    }
 
    private List<Point> getDisasterPoints(CloudantPersistence metadata)
