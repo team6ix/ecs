@@ -9,6 +9,17 @@ public class SurveyContext
 	private Boolean mustEvacuate;
 	private Boolean hasVehicle;
 	private Boolean hasSpace;
+	private Boolean isInjured;
+
+	public Boolean getIsInjured()
+	{
+		return isInjured;
+	}
+
+	public void setIsInjured(Boolean isInjured)
+	{
+		this.isInjured = isInjured;
+	}
 
 	/**
 	 * @return the _id
