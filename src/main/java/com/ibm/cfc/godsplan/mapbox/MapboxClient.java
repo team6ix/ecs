@@ -25,6 +25,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.maps.errors.ApiException;
 import com.ibm.cfc.godsplan.disaster.DisasterInformation;
 import com.ibm.cfc.godsplan.disaster.DisasterProximityCalculator;
@@ -122,6 +123,36 @@ public class MapboxClient
       {
          logger.error("Could not save info to admin map.", e);
       }
+   }
+   
+   /**
+    * Update an existing person on Mapbox with a new severity
+    * @param id
+    * @param severity
+    */
+   public void updatePerson(String id, int severity)
+   {
+      try
+      {
+         BasicHttpResponse response = httpClient.executeGet("/datasets/v1/" + MAPBOX_USER + "/" + MAPBOX_DATASET + "/features/" + id, getDefaultQueryParams());
+         JsonObject jsonObject = (new JsonParser()).parse(response.getEntity()).getAsJsonObject();
+         
+         JsonObject propertiesJson = new JsonObject();
+         propertiesJson.addProperty("severity", severity);
+         jsonObject.add("properties", propertiesJson);
+         
+         response = httpClient.executePut("/datasets/v1/" + MAPBOX_USER + "/" + MAPBOX_DATASET + "/features/" + id, jsonObject.toString(), getDefaultQueryParams());
+         if(response.getStatusCode() != 200)
+         {
+            logger.error("Received error from MapboxAPI: {}" + response.getEntity());
+         }
+      }
+      catch (HttpException e)
+      {
+         logger.error("Could not save info to admin map.", e);
+      }
+      
+
    }
 
    private Map<String, String> getDefaultQueryParams()
