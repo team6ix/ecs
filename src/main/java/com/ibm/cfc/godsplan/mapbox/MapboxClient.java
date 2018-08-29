@@ -98,6 +98,7 @@ public class MapboxClient
       geometryJson.addProperty("type", "Point");
 
       JsonObject propertiesJson = new JsonObject();
+      propertiesJson.addProperty("severity", 5);
 
       JsonArray coordinates = new JsonArray();
       coordinates.add(xCoordinate);
