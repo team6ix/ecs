@@ -198,11 +198,13 @@ public class MessageApi extends HttpServlet
       }
       else if (position.equals(ResponsePosition.NO_VEHICLE_ENDPOINT))
       {
-         response = getDirectionsResponse(userPhoneNumber, metadata, watsonResponse);
+         logger.info("No vehicle endpoint reached sending directions to {}", userPhoneNumber);
+         response = getDirectionsResponse(userPhoneNumber, metadata, mediaURI, watsonResponse);
       }
       else if (position.equals(ResponsePosition.VEHICLE_WITH_SPACE_ENDPOINT))
       {
-         response = getDirectionsResponse(userPhoneNumber, metadata, watsonResponse);
+         logger.info("Vehicle with space endpoint received sending directions to {}", userPhoneNumber);
+         response = getDirectionsResponse(userPhoneNumber, metadata, mediaURI, watsonResponse);
       }
       else
       {
@@ -379,10 +381,9 @@ public class MessageApi extends HttpServlet
    }
 
    private QueryResponse getDirectionsResponse(String userPhoneNumber, CloudantPersistence metadata,
-         String watsonResponse)
+         Optional<String> mediaURI, String watsonResponse)
    {
       String response = watsonResponse;
-      Optional<String> mediaURI = Optional.empty();
       Optional<LocationContext> location = metadata.retrieveAddress(userPhoneNumber);
       String formattedLocation = location.get().getAddress().getFormattedAddress();
       ShelterLocationContext shelter = getNearestShelterLocation(metadata, location.get());
