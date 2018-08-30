@@ -122,7 +122,7 @@ public class LocationMapper
     * @param wayPts
     *           list of way points
     * @param profile
-    *           route transportation profile, default is walking
+    *           route transportation profile, default is driving
     * @return information regarding directions between points
     */
    public DirectionInformation getDirectionInformation(Point origin, Point dest, Optional<List<Point>> wayPts,
@@ -131,7 +131,7 @@ public class LocationMapper
       boolean isValid = true;
       List<String> stepsList;
       String distance = "";
-      String tProfile = profile.isPresent() ? profile.get() : DirectionsCriteria.PROFILE_WALKING;
+      String tProfile = profile.isPresent() ? profile.get() : DirectionsCriteria.PROFILE_DRIVING;
       tProfile = "mode=" + tProfile + "&";
       String start = origin.latitude() + "," + origin.longitude();
       String end = dest.latitude() + "," + dest.longitude();

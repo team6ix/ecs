@@ -399,10 +399,10 @@ public class MessageApi extends HttpServlet
       DirectionInformation info = mapper.getDirectionInformation(origin, destination, Optional.empty(),
             Optional.empty());
 
-      response += "[Directions to Shelter: ";
+      response += "\n[Directions to Shelter at " + shelter.getLocation().getFormattedAddress() + ":\n";
       for (String direction : info.getDirections())
       {
-         response += direction + "\n";
+         response += "- " + direction + "\n";
       }
       response += "]";
       mediaURI = Optional.of(mapper.getGoogleImageURI(formattedLocation, Optional.of(info)));
