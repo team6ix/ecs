@@ -28,7 +28,7 @@ public class MapboxSeverity
 		{
 			return 1;
 		}
-		return 0;
+		return 5;
 	}
 
 }
