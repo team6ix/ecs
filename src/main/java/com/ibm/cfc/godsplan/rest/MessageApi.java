@@ -381,7 +381,7 @@ public class MessageApi extends HttpServlet
          logger.error(
                "multiple addresses returned for user input, need to query for more precise location. Address info '{}'",
                addressInfo);
-         response = "Address not understood, please respond to this message with any response";
+         response = "Address not understood, please reply to start over again";
          clearMetadata(metadata, userPhoneNumber);
       }
       return new QueryResponse(response, mediaURI);
