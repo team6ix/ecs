@@ -38,12 +38,15 @@ import com.mapbox.geojson.Point;
  */
 public class LocationMapper
 {
-   private static final String IMAGESIZE_DEFAULT = "800x600";
+   /***/
+   public final String IMAGESIZE_DEFAULT = "800x600";
    private final String key = System.getenv("GOOGLE_API_KEY");
    private final GeoApiContext context;
    // address, size, apikey | request centers a map and places a red pin at
    // specified locations, and creates a snapshot of specified size
    private static final String URL_GMAP_API = "https://maps.googleapis.com/maps/api/staticmap?center={0}&zoom=13&size={1}&"
+         + "markers=color:red%7Clabel:S%7C{0}&key={2}";
+   private static final String URL_GMAP_SHELTER_API = "https://maps.googleapis.com/maps/api/staticmap?visible={0}&zoom=13&size={1}&"
          + "markers=color:red%7Clabel:S%7C{0}&key={2}";
    private static final String URL_GMAP_DIRECTIONS_API = "https://maps.googleapis.com/maps/api/staticmap"
          + "?size={0}&path=weight:3%7Ccolor:red%7Cenc:{1}&key={2}";
@@ -262,6 +265,23 @@ public class LocationMapper
       }
 
       return MessageFormat.format(URL_GMAP_API, address, size, key).replaceAll(" ", "%20");
+   }
+
+   /**
+    * @param address
+    * @param size
+    * @param directions
+    * @return
+    */
+   public String getGoogleImageShelterURI(String viewport, String size)
+   {
+      // Json return gives quoted string, strip quotes
+      if (viewport.contains("\""))
+      {
+         viewport = viewport.replaceAll("\"", "");
+      }
+
+      return MessageFormat.format(URL_GMAP_SHELTER_API, viewport, size, key).replaceAll(" ", "%20");
    }
 
    private void writeEntityToFile(String fullPath, HttpEntity entity) throws IOException

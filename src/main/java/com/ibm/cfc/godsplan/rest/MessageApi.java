@@ -1,6 +1,7 @@
 package com.ibm.cfc.godsplan.rest;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -183,13 +184,16 @@ public class MessageApi extends HttpServlet
       }
       else if (position.equals(ResponsePosition.INJURY_CONFIRMATION))
       {
-         response = confirmResponse(isPositiveConfirmation(smsTxtBody), userPhoneNumber, metadata, watsonResponse,
-               ResponsePosition.INJURY_CONFIRMATION);
+         logger.info("Retrieving nearest shelter location...");
+         persistResponse(isPositiveConfirmation(smsTxtBody), position, metadata, userPhoneNumber);
+         response = getShelterAddressConfirmationResponse(smsTxtBody, position, metadata, userPhoneNumber,
+               watsonResponse, mediaURI);
       }
       else if (position.equals(ResponsePosition.ABLE_TO_EVACUATE))
       {
          logger.info("Able to evacuate endpoint reached sending directions to {}", userPhoneNumber);
-         response = getDirectionsResponse(userPhoneNumber, metadata, mediaURI, watsonResponse);
+         persistResponse(isPositiveConfirmation(smsTxtBody), position, metadata, userPhoneNumber);
+         response = getDirectionsResponse(smsTxtBody, userPhoneNumber, metadata, mediaURI, watsonResponse);
       }
       else if (position.equals(ResponsePosition.ABLE_TO_EVACUATE_CONFIRMATION))
       {
@@ -247,6 +251,32 @@ public class MessageApi extends HttpServlet
             response = new QueryResponse("Something went wrong, please reply to start over again");
          }
       }
+      return response;
+   }
+
+   private QueryResponse getShelterAddressConfirmationResponse(String smsTxtBody, ResponsePosition position,
+         CloudantPersistence metadata, String userPhoneNumber, String watsonResponse, Optional<String> mediaURI)
+   {
+      QueryResponse response;
+      boolean isPositiveConfirmation = isPositiveConfirmation(smsTxtBody);
+      response = confirmResponse(isPositiveConfirmation, userPhoneNumber, metadata, watsonResponse, position);
+      LocationContext location = metadata.retrieveAddress(userPhoneNumber).get();
+      String origin = location.getAddress().getFormattedAddress();
+      ShelterLocationContext shelter = getNearestShelterLocation(metadata, location);
+      String destination = shelter.getLocation().getFormattedAddress();
+      String viewport = "{0}%7c{1}";
+      viewport = MessageFormat.format(viewport, origin, destination);
+
+      if (isPositiveConfirmation)
+      {
+         String textResponse = watsonResponse;
+         String formattedAddress = shelter.getLocation().getFormattedAddress();
+         mediaURI = Optional.of(mapper.getGoogleImageShelterURI(viewport, mapper.IMAGESIZE_DEFAULT));
+         textResponse += "[" + formattedAddress + "]";
+
+         return new QueryResponse(textResponse, mediaURI);
+      }
+
       return response;
    }
 
@@ -385,29 +415,37 @@ public class MessageApi extends HttpServlet
       return new QueryResponse(response, mediaURI);
    }
 
-   private QueryResponse getDirectionsResponse(String userPhoneNumber, CloudantPersistence metadata,
+   private QueryResponse getDirectionsResponse(String smsTxtBody, String userPhoneNumber, CloudantPersistence metadata,
          Optional<String> mediaURI, String watsonResponse)
    {
-      String response = watsonResponse;
-      Optional<LocationContext> location = metadata.retrieveAddress(userPhoneNumber);
-      String formattedLocation = location.get().getAddress().getFormattedAddress();
-      ShelterLocationContext shelter = getNearestShelterLocation(metadata, location.get());
-      Point origin = getUserLocationPoint(location.get());
-      Point destination = Point.fromLngLat(shelter.getLocation().getLongitude(), shelter.getLocation().getLatitude());
 
-      logger.info("Plotting directions from {} to {}", formattedLocation, shelter.getLocation().getFormattedAddress());
-      DirectionInformation info = mapper.getDirectionInformation(origin, destination, Optional.empty(),
-            Optional.empty());
-
-      response += "\n[Directions to Shelter at " + shelter.getLocation().getFormattedAddress() + ":\n";
-      for (String direction : info.getDirections())
+      if (isPositiveConfirmation(smsTxtBody))
       {
-         response += "- " + direction + "\n";
-      }
-      response += "]";
-      mediaURI = Optional.of(mapper.getGoogleImageURI(formattedLocation, Optional.of(info)));
+         String response = watsonResponse;
+         Optional<LocationContext> location = metadata.retrieveAddress(userPhoneNumber);
+         String formattedLocation = location.get().getAddress().getFormattedAddress();
+         ShelterLocationContext shelter = getNearestShelterLocation(metadata, location.get());
+         Point origin = getUserLocationPoint(location.get());
+         Point destination = Point.fromLngLat(shelter.getLocation().getLongitude(),
+               shelter.getLocation().getLatitude());
 
-      return new QueryResponse(response, mediaURI);
+         logger.info("Plotting directions from {} to {}", formattedLocation,
+               shelter.getLocation().getFormattedAddress());
+         DirectionInformation info = mapper.getDirectionInformation(origin, destination, Optional.empty(),
+               Optional.empty());
+
+         response += "\n[Directions to Shelter at " + shelter.getLocation().getFormattedAddress() + ":\n";
+         for (String direction : info.getDirections())
+         {
+            response += "- " + direction + "\n";
+         }
+         response += "]";
+         mediaURI = Optional.of(mapper.getGoogleImageURI(formattedLocation, Optional.of(info)));
+
+         return new QueryResponse(response, mediaURI);
+      }
+
+      return new QueryResponse(watsonResponse);
    }
 
    private ResponsePosition getPosition(Optional<Context> persistedContext)
