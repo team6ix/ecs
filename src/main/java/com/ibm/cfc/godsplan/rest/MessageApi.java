@@ -188,8 +188,10 @@ public class MessageApi extends HttpServlet
       }
       else if (position.equals(ResponsePosition.ABLE_TO_EVACUATE))
       {
-         response = confirmResponse(isPositiveConfirmation(smsTxtBody), userPhoneNumber, metadata, watsonResponse,
-               ResponsePosition.ABLE_TO_EVACUATE);
+         logger.info("Able to evacuate endpoint reached sending directions to {}", userPhoneNumber);
+         response = getDirectionsResponse(userPhoneNumber, metadata, mediaURI, watsonResponse);
+         //         response = confirmResponse(isPositiveConfirmation(smsTxtBody), userPhoneNumber, metadata, watsonResponse,
+         //               ResponsePosition.ABLE_TO_EVACUATE);
       }
       else if (position.equals(ResponsePosition.ABLE_TO_EVACUATE_CONFIRMATION))
       {
@@ -208,7 +210,6 @@ public class MessageApi extends HttpServlet
       }
       else
       {
-         logger.info("Current response position {}" + position);
          response = new QueryResponse(watsonResponse, mediaURI);
       }
       logger.info("Survey Context: " + metadata.retrieveSurveyContext(userPhoneNumber).toString());
