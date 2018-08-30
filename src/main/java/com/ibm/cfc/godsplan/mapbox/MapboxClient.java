@@ -60,6 +60,10 @@ public class MapboxClient
    /***/
    public static final String MAPBOX_DATASET = "cjl565k8f0pc62wnxgggh6gc4";
    /***/
+   public static final String MAPBOX_TILESET = "team6ix.cjl565k8f0pc62wnxgggh6gc4-6yi10";
+   /***/
+   public static final String MAPBOX_TILESET_NAME = "TorontoDisaster";
+   /***/
    public static BasicHttpClient httpClient;
    /***/
    public final String FINAL_DESTINATION = "You have arrived at your destination";
@@ -123,6 +127,7 @@ public class MapboxClient
       {
          logger.error("Could not save info to admin map.", e);
       }
+      updateMap();
    }
    
    /**
@@ -132,6 +137,7 @@ public class MapboxClient
     */
    public void updatePerson(String id, int severity)
    {
+      logger.info("Updating id with severity {}", severity);
       try
       {
          BasicHttpResponse response = httpClient.executeGet("/datasets/v1/" + MAPBOX_USER + "/" + MAPBOX_DATASET + "/features/" + id, getDefaultQueryParams());
@@ -151,8 +157,32 @@ public class MapboxClient
       {
          logger.error("Could not save info to admin map.", e);
       }
-      
+      updateMap();
+   }
+   
+   /**
+    *  Sends request to update mapbox tileset
+    */
+   public void updateMap()
+   {
+      try
+      {
+         JsonObject updateJson = new JsonObject();
+         updateJson.addProperty("tileset", MAPBOX_TILESET);
+         updateJson.addProperty("url", "mapbox://datasets/team6ix/" + MAPBOX_DATASET);
+         updateJson.addProperty("name", MAPBOX_TILESET_NAME);
 
+         BasicHttpResponse response = httpClient.executePost("/uploads/v1/" + MAPBOX_USER, updateJson.toString(), getDefaultQueryParams());
+         if(response.getStatusCode() != 200)
+         {
+            System.out.println(response.getStatusCode());
+            logger.error("Received error from MapboxAPI updating map: {}" + response.getEntity());
+         }
+      }
+      catch (HttpException e)
+      {
+         logger.error("Could not save info to admin map.", e);
+      }
    }
 
    private Map<String, String> getDefaultQueryParams()
