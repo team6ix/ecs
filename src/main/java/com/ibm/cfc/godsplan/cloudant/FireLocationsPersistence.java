@@ -25,7 +25,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ibm.cfc.godsplan.cloudant.model.ChatContext;
-import com.ibm.cfc.godsplan.cloudant.model.FireLocationContext;
+import com.ibm.cfc.godsplan.cloudant.model.DisasterLocationContext;
 
 /**
  * Responsible for persisting information related to chat context. Stores documents in {@link #DB}.
@@ -94,13 +94,13 @@ public class FireLocationsPersistence
     * @param id
     * @return Optional<FireLocationContext>
     */
-   public Optional<FireLocationContext> retrieve(String id)
+   public Optional<DisasterLocationContext> retrieve(String id)
    {
       logger.info("retrieving fire location context for '{}'", id);
-      Optional<FireLocationContext> fireLocationContext;
+      Optional<DisasterLocationContext> fireLocationContext;
       try
       {
-         fireLocationContext = Optional.of(db.find(FireLocationContext.class, id));
+         fireLocationContext = Optional.of(db.find(DisasterLocationContext.class, id));
       }
       catch (NoDocumentException nde)
       {
@@ -114,10 +114,10 @@ public class FireLocationsPersistence
     * 
     * @return a list of all fire locations
     */
-   public List<FireLocationContext> retrieveAll()
+   public List<DisasterLocationContext> retrieveAll()
    {
       AllDocsRequestBuilder builder = db.getAllDocsRequestBuilder();
-      List<FireLocationContext> fireLocations = new ArrayList<>();
+      List<DisasterLocationContext> fireLocations = new ArrayList<>();
 
       try
       {

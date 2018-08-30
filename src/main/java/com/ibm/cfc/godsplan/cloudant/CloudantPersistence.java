@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import com.cloudant.client.api.ClientBuilder;
 import com.cloudant.client.api.CloudantClient;
 import com.ibm.cfc.godsplan.cloudant.model.ChatContext;
-import com.ibm.cfc.godsplan.cloudant.model.FireLocationContext;
+import com.ibm.cfc.godsplan.cloudant.model.DisasterLocationContext;
 import com.ibm.cfc.godsplan.cloudant.model.LocationContext;
 import com.ibm.cfc.godsplan.cloudant.model.SurveyContext;
 import com.ibm.cfc.godsplan.maps.model.GoogleAddressInformation;
@@ -184,12 +184,12 @@ public class CloudantPersistence
 	 * @param id
 	 * @return
 	 */
-	public Optional<FireLocationContext> retrieve(String id)
+	public Optional<DisasterLocationContext> retrieve(String id)
 	{
 	   return fireLocationsDb.retrieve(id);
 	}
 	
-	public List<FireLocationContext> retrieveAll()
+	public List<DisasterLocationContext> retrieveDisasterLocations()
 	{
 	   return fireLocationsDb.retrieveAll();
 	}
