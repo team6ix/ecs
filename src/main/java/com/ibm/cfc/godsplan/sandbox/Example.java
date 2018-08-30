@@ -10,7 +10,6 @@ import com.google.maps.errors.ApiException;
 import com.ibm.cfc.godsplan.mapbox.model.DirectionInformation;
 import com.ibm.cfc.godsplan.maps.LocationMapper;
 import com.ibm.cfc.godsplan.maps.model.GoogleAddressInformation;
-import com.ibm.cfc.godsplan.rest.MessageApi;
 import com.mapbox.geojson.Point;
 
 public class Example
@@ -52,8 +51,6 @@ public class Example
 
       System.out.println(new GsonBuilder().setPrettyPrinting().create().toJson(info.getRouteDetails()));
       mapper.getGoogleImage(rawAddress, "600x400", file, Optional.of(info));
-
-      MessageApi api = new MessageApi();
 
       // CloudantPersistence p = new CloudantPersistence();
       // p.persistHasSpace(CLIENT_PHONE_NUMBER, true);

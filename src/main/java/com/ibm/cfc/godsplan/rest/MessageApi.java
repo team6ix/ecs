@@ -402,7 +402,7 @@ public class MessageApi extends HttpServlet
       response += "[Directions to Shelter: ";
       for (String direction : info.getDirections())
       {
-         response += direction + "%0a";
+         response += direction + "\n";
       }
       response += "]";
       mediaURI = Optional.of(mapper.getGoogleImageURI(formattedLocation, Optional.of(info)));

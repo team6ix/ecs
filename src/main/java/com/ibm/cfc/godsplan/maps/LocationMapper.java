@@ -180,7 +180,7 @@ public class LocationMapper
          String htmlInstruction = step.get("html_instructions").getAsString();
          String instruction = StringEscapeUtils.unescapeHtml4(htmlInstruction);
          instruction = instruction.replaceAll("\\<.\\>", "").replaceAll("\\<\\/.\\>", "")
-               .replaceAll("\\<div.*\\\\\"\\>", "").replaceAll("\\<\\/div\\>", "");
+               .replaceAll("\\<div.+\"\\>", "").replaceAll("\\<\\/div\\>", "");
 
          stepList.add(MessageFormat.format(direction, instruction, distance));
       }
