@@ -71,16 +71,16 @@ public class SurveyPersistence
 	 * @param phoneNumber
 	 * @param b
 	 */
-	public void persistHasVehicle(String phoneNumber, boolean b)
+	public void persistCanEvacuate(String phoneNumber, boolean b)
 	{
-		logger.info("setting hasVehicle for '{}'", phoneNumber);
-		persistAttribute(phoneNumber, "hasVehicle", b);
+		logger.info("setting canEvacuate for '{}'", phoneNumber);
+		persistAttribute(phoneNumber, "canEvacuate", b);
 	}
 
-	public void persistHasSpace(String phoneNumber, boolean b)
+	public void persistEvacuateConfirmation(String phoneNumber, boolean b)
 	{
-		logger.info("setting hasSpace for '{}'", phoneNumber);
-		persistAttribute(phoneNumber, "hasSpace", b);
+		logger.info("setting evacuateConfirmation for '{}'", phoneNumber);
+		persistAttribute(phoneNumber, "evacuateConfirmation", b);
 	}
 
 	public void persistInjuryConfirmation(String phoneNumber, boolean b)
@@ -121,7 +121,7 @@ public class SurveyPersistence
 		try (InputStream is = db.find(phoneNumber);)
 		{
 			JsonElement doc = compose.jsonFromStream(is);
-         JsonObject json = doc.getAsJsonObject();
+			JsonObject json = doc.getAsJsonObject();
 			db.remove(json);
 		}
 		catch (NoDocumentException e)
