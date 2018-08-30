@@ -19,6 +19,7 @@ import com.ibm.cfc.godsplan.cloudant.CloudantPersistence;
 import com.ibm.cfc.godsplan.cloudant.model.ChatContext;
 import com.ibm.cfc.godsplan.cloudant.model.DisasterLocationContext;
 import com.ibm.cfc.godsplan.cloudant.model.LocationContext;
+import com.ibm.cfc.godsplan.cloudant.model.ShelterLocationContext;
 import com.ibm.cfc.godsplan.disaster.DisasterProximityCalculator;
 import com.ibm.cfc.godsplan.mapbox.MapboxClient;
 import com.ibm.cfc.godsplan.maps.LocationMapper;
@@ -215,7 +216,7 @@ public class MessageApi extends HttpServlet
          {
             clearMetadata(metadata, userPhoneNumber);
             response = new QueryResponse(
-                  "You are not in immediate danger. Please keep safe and stay in your location. Response back if your status changes.");
+                  "You are not in immediate danger. Please keep safe and stay in your location. Respond back if your location changes.");
          }
       }
       else
@@ -263,6 +264,28 @@ public class MessageApi extends HttpServlet
       }
       return disasterPoints;
    }
+   
+   private ShelterLocationContext getNearestShelterLocation(CloudantPersistence metadata, LocationContext userLocationContext)
+   {
+      List<ShelterLocationContext> shelterLocations = metadata.retrieveShelterLocations();
+      Point userPoint = getUserLocationPoint(userLocationContext);
+      DisasterProximityCalculator calc = new DisasterProximityCalculator(userPoint);
+      
+      double distance = Double.MAX_VALUE;
+      ShelterLocationContext closestShelter = null;
+      for (ShelterLocationContext shelter : shelterLocations)
+      {
+         Point shelterPoint = Point.fromLngLat(shelter.getLocation().getLongitude(), shelter.getLocation().getLatitude());
+         double newDistance = calc.distance(userPoint, shelterPoint);
+         if (newDistance < distance)
+         {
+            distance = newDistance;
+            closestShelter = shelter;
+         }
+      }
+      return closestShelter;
+   }
+   
 
    private QueryResponse confirmResponse(boolean confirmed, String userPhoneNumber, CloudantPersistence metadata,
          String watsonResponse, ResponsePosition position)

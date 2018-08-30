@@ -32,7 +32,7 @@ import com.ibm.cfc.godsplan.cloudant.model.DisasterLocationContext;
  * 
  * See {@link ChatContext} for the data stored in this database.
  */
-public class FireLocationsPersistence
+public class DisasterLocationsPersistence
 {
 
    /**
@@ -40,7 +40,7 @@ public class FireLocationsPersistence
     */
    public static final String DB = "firelocations";
 
-   protected static final Logger logger = LoggerFactory.getLogger(FireLocationsPersistence.class);
+   protected static final Logger logger = LoggerFactory.getLogger(DisasterLocationsPersistence.class);
 
    
    Database db;
@@ -51,7 +51,7 @@ public class FireLocationsPersistence
     * 
     * @param chatDb
     */
-   public FireLocationsPersistence(Database chatDb)
+   public DisasterLocationsPersistence(Database chatDb)
    {
       this.db = chatDb;
       compose = new JsonDocumentComposer();
@@ -63,14 +63,13 @@ public class FireLocationsPersistence
     * @param id
     * @param coordinates
     */
-   public void persist(int id, Coordinates coordinates)
+   public void persist(String id, Coordinates coordinates)
    {
       logger.info("saving fire location  for '{}'", id);
-      String idString = Integer.toString(id);
       JsonObject jsonCoords = new JsonObject();
       jsonCoords.addProperty("latitude", coordinates.getLatitude());
       jsonCoords.addProperty("longitude", coordinates.getLongitude());
-      try (InputStream is = db.find(idString))
+      try (InputStream is = db.find(id))
       {
          JsonElement doc = compose.jsonFromStream(is);
          JsonObject json = doc.getAsJsonObject();
@@ -79,7 +78,7 @@ public class FireLocationsPersistence
       }
       catch (NoDocumentException e)
       {
-         JsonObject json = compose.blankDocument(idString);
+         JsonObject json = compose.blankDocument(id);
          json.add("coordinates", jsonCoords);
          db.save(json);
       }
@@ -97,17 +96,17 @@ public class FireLocationsPersistence
    public Optional<DisasterLocationContext> retrieve(String id)
    {
       logger.info("retrieving fire location context for '{}'", id);
-      Optional<DisasterLocationContext> fireLocationContext;
+      Optional<DisasterLocationContext> disasterLocationContext;
       try
       {
-         fireLocationContext = Optional.of(db.find(DisasterLocationContext.class, id));
+         disasterLocationContext = Optional.of(db.find(DisasterLocationContext.class, id));
       }
       catch (NoDocumentException nde)
       {
          logger.info("No fire location context for '{}' found", id);
-         fireLocationContext = Optional.empty();
+         disasterLocationContext = Optional.empty();
       }
-      return fireLocationContext;
+      return disasterLocationContext;
    }
 
    /**
@@ -116,19 +115,21 @@ public class FireLocationsPersistence
     */
    public List<DisasterLocationContext> retrieveAll()
    {
+      logger.info("retrieving all fire locations");
+      
       AllDocsRequestBuilder builder = db.getAllDocsRequestBuilder();
-      List<DisasterLocationContext> fireLocations = new ArrayList<>();
+      List<DisasterLocationContext> disasterLocations = new ArrayList<>();
 
       try
       {
-         fireLocations = builder.includeDocs(true).build().getResponse().getDocsAs(FireLocationContext.class);
+         disasterLocations = builder.includeDocs(true).build().getResponse().getDocsAs(DisasterLocationContext.class);
       }
       catch (IOException e)
       {
          e.printStackTrace();
       }
 
-      return fireLocations;
+      return disasterLocations;
    }
    /**
     * 

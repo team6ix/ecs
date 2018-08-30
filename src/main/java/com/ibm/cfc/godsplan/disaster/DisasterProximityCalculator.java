@@ -109,6 +109,21 @@ public class DisasterProximityCalculator
     */
    public boolean isPointWithinDisasterZone(Point p, Point dp)
    {
+      double distance = distance(p, dp);
+      logger.info("Coordinate distance from danger zone, {}", distance);
+
+      return distance <= DISASTER_RADIUS;
+   }
+
+   /**
+    * 
+    * 
+    * @param p
+    * @param dp
+    * @return the distance in meters of two coordinates on earth
+    */
+   public double distance(Point p, Point dp)
+   {
       final int R = 6371; // Radius of the earth
 
       double latDistance = Math.toRadians(dp.latitude() - p.latitude());
@@ -118,11 +133,10 @@ public class DisasterProximityCalculator
       double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
       double distance = R * c * 1000; // convert to meters
       distance = Math.sqrt(distance);
-      logger.info("Coordinate distance from danger zone, {}", distance);
-
-      return distance <= DISASTER_RADIUS;
+      
+      return distance;
    }
-
+   
    private void addNewRequiredWaypoint(Point p)
    {
       double lat = p.latitude();

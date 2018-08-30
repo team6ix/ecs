@@ -75,7 +75,7 @@ public class FireCoordinates
          String latitude = temp[0].trim();
          String longitude = temp[1].trim();
          Coordinates fireCoordinates = new Coordinates(Double.parseDouble(latitude),Double.parseDouble(longitude));
-         cloudant.persistFireLocation(id, fireCoordinates);
+         cloudant.persistFireLocation(String.valueOf(id), fireCoordinates);
          id++;
       }
    }
