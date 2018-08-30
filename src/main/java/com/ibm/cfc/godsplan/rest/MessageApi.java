@@ -160,22 +160,21 @@ public class MessageApi extends HttpServlet
          CloudantPersistence metadata, Optional<Context> persistedContext)
    {
       Optional<InputData> input = Optional.of(new InputData.Builder(smsTxtBody).build());
-      Optional<String> mediaURI = Optional.empty();
       ResponsePosition position = getPosition(persistedContext);
       logger.info("Conversation position '{}' retrieved for number '{}'", position.toString(), userPhoneNumber);
       String watsonResponse = bot.sendAssistantMessage(persistedContext, input);
       persistContext(userPhoneNumber, bot.getLastContext(), metadata);
 
-      return getQueryResponse(smsTxtBody, userPhoneNumber, metadata, mediaURI, position, watsonResponse);
+      return getQueryResponse(smsTxtBody, userPhoneNumber, metadata, position, watsonResponse);
    }
 
    private QueryResponse getQueryResponse(String smsTxtBody, String userPhoneNumber, CloudantPersistence metadata,
-         Optional<String> mediaURI, ResponsePosition position, String watsonResponse)
+         ResponsePosition position, String watsonResponse)
    {
       QueryResponse response;
       if (position.equals(ResponsePosition.ADDRESS_INPUT))
       {
-         response = getAddressResponse(smsTxtBody, userPhoneNumber, metadata, mediaURI, watsonResponse);
+         response = getAddressResponse(smsTxtBody, userPhoneNumber, metadata, watsonResponse);
       }
       else if (position.equals(ResponsePosition.ADDRESS_CONFIRMATION))
       {
@@ -187,13 +186,13 @@ public class MessageApi extends HttpServlet
          logger.info("Retrieving nearest shelter location...");
          persistResponse(isPositiveConfirmation(smsTxtBody), position, metadata, userPhoneNumber);
          response = getShelterAddressConfirmationResponse(smsTxtBody, position, metadata, userPhoneNumber,
-               watsonResponse, mediaURI);
+               watsonResponse);
       }
       else if (position.equals(ResponsePosition.ABLE_TO_EVACUATE))
       {
          logger.info("Able to evacuate endpoint reached sending directions to {}", userPhoneNumber);
          persistResponse(isPositiveConfirmation(smsTxtBody), position, metadata, userPhoneNumber);
-         response = getDirectionsResponse(smsTxtBody, userPhoneNumber, metadata, mediaURI, watsonResponse);
+         response = getDirectionsResponse(smsTxtBody, userPhoneNumber, metadata, watsonResponse);
       }
       else if (position.equals(ResponsePosition.ABLE_TO_EVACUATE_CONFIRMATION))
       {
@@ -215,7 +214,7 @@ public class MessageApi extends HttpServlet
       }
       else
       {
-         response = new QueryResponse(watsonResponse, mediaURI);
+         response = new QueryResponse(watsonResponse, Optional.empty());
       }
       logger.info("Survey Context: " + metadata.retrieveSurveyContext(userPhoneNumber).toString());
       return response;
@@ -255,7 +254,7 @@ public class MessageApi extends HttpServlet
    }
 
    private QueryResponse getShelterAddressConfirmationResponse(String smsTxtBody, ResponsePosition position,
-         CloudantPersistence metadata, String userPhoneNumber, String watsonResponse, Optional<String> mediaURI)
+         CloudantPersistence metadata, String userPhoneNumber, String watsonResponse)
    {
       QueryResponse response;
       boolean isPositiveConfirmation = isPositiveConfirmation(smsTxtBody);
@@ -271,7 +270,7 @@ public class MessageApi extends HttpServlet
       {
          String textResponse = watsonResponse;
          String formattedAddress = shelter.getLocation().getFormattedAddress();
-         mediaURI = Optional.of(mapper.getGoogleImageShelterURI(viewport, mapper.IMAGESIZE_DEFAULT));
+         Optional<String> mediaURI = Optional.of(mapper.getGoogleImageShelterURI(viewport, mapper.IMAGESIZE_DEFAULT));
          textResponse += "[" + formattedAddress + "]";
 
          return new QueryResponse(textResponse, mediaURI);
@@ -392,10 +391,11 @@ public class MessageApi extends HttpServlet
    }
 
    private QueryResponse getAddressResponse(String smsTxtBody, String userPhoneNumber, CloudantPersistence metadata,
-         Optional<String> mediaURI, String watsonResponse)
+         String watsonResponse)
    {
       String response = watsonResponse;
       List<GoogleAddressInformation> addressInfo = getAddressDetail(smsTxtBody);
+      Optional<String> mediaURI = Optional.empty();
       if (addressInfo.size() == 1)
       {
          GoogleAddressInformation addressInfoElement = addressInfo.get(0);
@@ -411,12 +411,14 @@ public class MessageApi extends HttpServlet
          logger.error(
                "multiple addresses returned for user input, need to query for more precise location. Address info '{}'",
                addressInfo);
+         response = "Address not understood, please reply to start over again";
+         clearMetadata(metadata, userPhoneNumber);
       }
       return new QueryResponse(response, mediaURI);
    }
 
    private QueryResponse getDirectionsResponse(String smsTxtBody, String userPhoneNumber, CloudantPersistence metadata,
-         Optional<String> mediaURI, String watsonResponse)
+         String watsonResponse)
    {
 
       if (isPositiveConfirmation(smsTxtBody))
@@ -440,7 +442,7 @@ public class MessageApi extends HttpServlet
             response += "- " + direction + "\n";
          }
          response += "]";
-         mediaURI = Optional.of(mapper.getGoogleImageURI(formattedLocation, Optional.of(info)));
+         Optional<String> mediaURI = Optional.of(mapper.getGoogleImageURI(formattedLocation, Optional.of(info)));
 
          return new QueryResponse(response, mediaURI);
       }
