@@ -97,17 +97,17 @@ public class FireLocationsPersistence
    public Optional<DisasterLocationContext> retrieve(String id)
    {
       logger.info("retrieving fire location context for '{}'", id);
-      Optional<DisasterLocationContext> fireLocationContext;
+      Optional<DisasterLocationContext> disasterLocationContext;
       try
       {
-         fireLocationContext = Optional.of(db.find(DisasterLocationContext.class, id));
+         disasterLocationContext = Optional.of(db.find(DisasterLocationContext.class, id));
       }
       catch (NoDocumentException nde)
       {
          logger.info("No fire location context for '{}' found", id);
-         fireLocationContext = Optional.empty();
+         disasterLocationContext = Optional.empty();
       }
-      return fireLocationContext;
+      return disasterLocationContext;
    }
 
    /**
@@ -117,18 +117,18 @@ public class FireLocationsPersistence
    public List<DisasterLocationContext> retrieveAll()
    {
       AllDocsRequestBuilder builder = db.getAllDocsRequestBuilder();
-      List<DisasterLocationContext> fireLocations = new ArrayList<>();
+      List<DisasterLocationContext> disasterLocations = new ArrayList<>();
 
       try
       {
-         fireLocations = builder.includeDocs(true).build().getResponse().getDocsAs(FireLocationContext.class);
+         disasterLocations = builder.includeDocs(true).build().getResponse().getDocsAs(DisasterLocationContext.class);
       }
       catch (IOException e)
       {
          e.printStackTrace();
       }
 
-      return fireLocations;
+      return disasterLocations;
    }
    /**
     * 
