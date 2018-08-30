@@ -19,6 +19,7 @@ import com.ibm.cfc.godsplan.cloudant.CloudantPersistence;
 import com.ibm.cfc.godsplan.cloudant.model.ChatContext;
 import com.ibm.cfc.godsplan.cloudant.model.DisasterLocationContext;
 import com.ibm.cfc.godsplan.cloudant.model.LocationContext;
+import com.ibm.cfc.godsplan.cloudant.model.ShelterLocationContext;
 import com.ibm.cfc.godsplan.disaster.DisasterProximityCalculator;
 import com.ibm.cfc.godsplan.mapbox.MapboxClient;
 import com.ibm.cfc.godsplan.maps.LocationMapper;
@@ -262,6 +263,29 @@ public class MessageApi extends HttpServlet
                Point.fromLngLat(location.getCoordinates().getLongitude(), location.getCoordinates().getLatitude()));
       }
       return disasterPoints;
+   }
+   
+   private GoogleAddressInformation getNearestShelterLocation(CloudantPersistence metadata, LocationContext userLocationContext)
+   {
+      List<Point> shelterCoordinates = getShelterLocations(metadata);
+      Point userPoint = getUserLocationPoint(userLocationContext);
+      for (Point shelterCoordinate : shelterCoordinates)
+      {
+         
+      }
+      return null;
+   }
+   
+   private List<Point> getShelterLocations(CloudantPersistence metadata)
+   {
+      List<Point> shelterPoints = new ArrayList<>();
+      List<ShelterLocationContext> shelterLocations = metadata.retrieveShelterLocations();
+      for (ShelterLocationContext shelter : shelterLocations)
+      {
+         shelterPoints.add(
+               Point.fromLngLat(shelter.getLocation().getLongitude(), shelter.getLocation().getLatitude()));
+      }
+      return shelterPoints;
    }
 
    private QueryResponse confirmResponse(boolean confirmed, String userPhoneNumber, CloudantPersistence metadata,
