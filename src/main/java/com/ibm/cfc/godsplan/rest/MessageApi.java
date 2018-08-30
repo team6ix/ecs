@@ -221,27 +221,29 @@ public class MessageApi extends HttpServlet
       response = confirmResponse(isPositiveConfirmation, userPhoneNumber, metadata, watsonResponse,
             ResponsePosition.ADDRESS_CONFIRMATION);
       Optional<LocationContext> userAddress = metadata.retrieveAddress(userPhoneNumber);
-      if (userAddress.isPresent())
+      if (isPositiveConfirmation)
       {
-         if (isUserOutsideDisasterZone(isPositiveConfirmation, metadata, userAddress.get()))
+         if (userAddress.isPresent())
          {
-            clearMetadata(metadata, userPhoneNumber);
-            mapboxClient.updatePerson(userPhoneNumber, MapboxClient.Severity.LOWEST.getValue());
-            response = new QueryResponse(
-                  "You are not in immediate danger. Please keep safe and stay in your location. Respond back if your location changes.");
+            if (isUserOutsideDisasterZone(isPositiveConfirmation, metadata, userAddress.get()))
+            {
+               clearMetadata(metadata, userPhoneNumber);
+               mapboxClient.updatePerson(userPhoneNumber, MapboxClient.Severity.LOWEST.getValue());
+               response = new QueryResponse(
+                     "You are not in immediate danger. Please keep safe and stay in your location. Respond back if your location changes.");
+            }
+            else
+            {
+               metadata.persistMustEvacuate(userPhoneNumber, true);
+            }
          }
          else
          {
-            metadata.persistMustEvacuate(userPhoneNumber, true);
+            logger.error("User sent confirmation but address was not found in metadata, clearing user metadata");
+            clearMetadata(metadata, userPhoneNumber);
+            response = new QueryResponse("Something went wrong, please reply to start over again");
          }
       }
-      else
-      {
-         logger.error("User sent confirmation but address was not found in metadata, clearing user metadata");
-         clearMetadata(metadata, userPhoneNumber);
-         response = new QueryResponse("Something went wrong, please reply to start over again");
-      }
-
       return response;
    }
 
