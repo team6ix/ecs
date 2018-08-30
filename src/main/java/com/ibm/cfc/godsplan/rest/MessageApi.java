@@ -265,28 +265,27 @@ public class MessageApi extends HttpServlet
       return disasterPoints;
    }
    
-   private GoogleAddressInformation getNearestShelterLocation(CloudantPersistence metadata, LocationContext userLocationContext)
+   private ShelterLocationContext getNearestShelterLocation(CloudantPersistence metadata, LocationContext userLocationContext)
    {
-      List<Point> shelterCoordinates = getShelterLocations(metadata);
-      Point userPoint = getUserLocationPoint(userLocationContext);
-      for (Point shelterCoordinate : shelterCoordinates)
-      {
-         
-      }
-      return null;
-   }
-   
-   private List<Point> getShelterLocations(CloudantPersistence metadata)
-   {
-      List<Point> shelterPoints = new ArrayList<>();
       List<ShelterLocationContext> shelterLocations = metadata.retrieveShelterLocations();
+      Point userPoint = getUserLocationPoint(userLocationContext);
+      DisasterProximityCalculator calc = new DisasterProximityCalculator(userPoint);
+      
+      double distance = Double.MAX_VALUE;
+      ShelterLocationContext closestShelter = null;
       for (ShelterLocationContext shelter : shelterLocations)
       {
-         shelterPoints.add(
-               Point.fromLngLat(shelter.getLocation().getLongitude(), shelter.getLocation().getLatitude()));
+         Point shelterPoint = Point.fromLngLat(shelter.getLocation().getLongitude(), shelter.getLocation().getLatitude());
+         double newDistance = calc.distance(userPoint, shelterPoint);
+         if (newDistance < distance)
+         {
+            distance = newDistance;
+            closestShelter = shelter;
+         }
       }
-      return shelterPoints;
+      return closestShelter;
    }
+   
 
    private QueryResponse confirmResponse(boolean confirmed, String userPhoneNumber, CloudantPersistence metadata,
          String watsonResponse, ResponsePosition position)
