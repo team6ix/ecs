@@ -118,19 +118,10 @@ public class FireLocationsPersistence
    {
       AllDocsRequestBuilder builder = db.getAllDocsRequestBuilder();
       List<FireLocationContext> fireLocations = new ArrayList<>();
+
       try
       {
-         List<String> ids;
-         ids = builder.build().getResponse().getDocIds();
-
-         for (String id : ids)
-         {
-            Optional<FireLocationContext> fireLocation = retrieve(id);
-            if (fireLocation.isPresent())
-            {
-               fireLocations.add(fireLocation.get());
-            }
-         }
+         fireLocations = builder.includeDocs(true).build().getResponse().getDocsAs(FireLocationContext.class);
       }
       catch (IOException e)
       {
