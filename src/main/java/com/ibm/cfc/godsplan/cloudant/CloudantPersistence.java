@@ -125,9 +125,9 @@ public class CloudantPersistence
 	 * @param phoneNumber
 	 * @param b
 	 */
-	public void persistHasVehicle(String phoneNumber, boolean b)
+	public void persistCanEvacuate(String phoneNumber, boolean b)
 	{
-		surveyDb.persistHasVehicle(phoneNumber, b);
+		surveyDb.persistCanEvacuate(phoneNumber, b);
 	}
 
 	/**
@@ -135,9 +135,9 @@ public class CloudantPersistence
 	 * @param phoneNumber
 	 * @param b
 	 */
-	public void persistHasSpace(String phoneNumber, boolean b)
+	public void persistEvacuateConfirmation(String phoneNumber, boolean b)
 	{
-		surveyDb.persistHasSpace(phoneNumber, b);
+		surveyDb.persistEvacuateConfirmation(phoneNumber, b);
 	}
 
 	/**

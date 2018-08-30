@@ -7,8 +7,8 @@ public class SurveyContext
 {
 	private String _id;
 	private Boolean mustEvacuate;
-	private Boolean hasVehicle;
-	private Boolean hasSpace;
+	private Boolean canEvacuate;
+	private Boolean evacuateConfirmation;
 	private Boolean injuryConfirmed;
 
 	public Boolean getIsInjured()
@@ -60,7 +60,7 @@ public class SurveyContext
 	 */
 	public Boolean getHasVehicle()
 	{
-		return hasVehicle;
+		return canEvacuate;
 	}
 
 	/**
@@ -69,7 +69,7 @@ public class SurveyContext
 	 */
 	public void setHasVehicle(Boolean hasVehicle)
 	{
-		this.hasVehicle = hasVehicle;
+		this.canEvacuate = hasVehicle;
 	}
 
 	/**
@@ -78,7 +78,7 @@ public class SurveyContext
 	 */
 	public Boolean getHasSpace()
 	{
-		return this.hasSpace;
+		return this.evacuateConfirmation;
 	}
 
 	/**
@@ -87,7 +87,7 @@ public class SurveyContext
 	 */
 	public void setHasSpace(Boolean hasSpace)
 	{
-		this.hasSpace = hasSpace;
+		this.evacuateConfirmation = hasSpace;
 	}
 
 	/**
@@ -96,8 +96,9 @@ public class SurveyContext
 	@Override
 	public String toString()
 	{
-		return "SurveyContext [get_id()=" + get_id() + ", getMustEvacuate()=" + getMustEvacuate() + ", getHasVehicle()="
-				+ getHasVehicle() + ", getHasSpace()=" + getHasSpace() + ", getIsInjured()=" + getIsInjured() + "]";
+		return "SurveyContext [get_id()=" + get_id() + ", getMustEvacuate()=" + getMustEvacuate()
+				+ ", getCanEvacuate()=" + getHasVehicle() + ", getEvacuateConfirmation()=" + getHasSpace()
+				+ ", getIsInjured()=" + getIsInjured() + "]";
 	}
 
 }

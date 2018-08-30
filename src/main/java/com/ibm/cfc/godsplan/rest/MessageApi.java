@@ -345,11 +345,11 @@ public class MessageApi extends HttpServlet
       }
       else if (position.equals(ResponsePosition.ABLE_TO_EVACUATE))
       {
-         metadata.persistHasVehicle(userPhoneNumber, confirmation);
+         metadata.persistCanEvacuate(userPhoneNumber, confirmation);
       }
       else if (position.equals(ResponsePosition.ABLE_TO_EVACUATE_CONFIRMATION))
       {
-         metadata.persistHasSpace(userPhoneNumber, confirmation);
+         metadata.persistEvacuateConfirmation(userPhoneNumber, confirmation);
       }
       else if (position.equals(ResponsePosition.NO_VEHICLE_ENDPOINT)
             || position.equals(ResponsePosition.VEHICLE_WITH_SPACE_ENDPOINT))
