@@ -12,10 +12,8 @@
 package com.ibm.cfc.godsplan.mapbox.model;
 
 import java.util.List;
-import com.mapbox.api.directions.v5.models.DirectionsResponse;
-import com.mapbox.api.directions.v5.models.DirectionsRoute;
+import com.google.gson.JsonObject;
 import com.mapbox.geojson.Point;
-import retrofit2.Response;
 
 /**
  * Holds direction information between two points
@@ -24,10 +22,11 @@ public class DirectionInformation
 {
    private Point origin;
    private Point destination;
-   private Double distance;
+   private String distance;
    private List<String> directions;
    private String travelProfile;
-   private DirectionsRoute route;
+   private JsonObject route;
+   private String polyLine;
    private boolean isValid;
 
    /**
@@ -43,20 +42,21 @@ public class DirectionInformation
     *           travel profile
     * @param directs
     *           step by step directions to get from start to end
-    * @param response
-    *           response from directions api
+    * @param route
+    *           legs from directions api
     * @param isValid
     *           true if direction information is valid
     */
-   public DirectionInformation(Point org, Point dest, double dist, String profile, List<String> directs,
-         Response<DirectionsResponse> response, boolean isValid)
+   public DirectionInformation(Point org, Point dest, String dist, String profile, List<String> directs,
+         JsonObject route, boolean isValid)
    {
       this.origin = org;
       this.destination = dest;
       this.distance = dist;
       this.directions = directs;
       this.travelProfile = profile;
-      this.route = response != null ? response.body().routes().get(0) : null;
+      this.route = route != null ? route : null;
+      this.polyLine = route != null ? route.get("overview_polyline").getAsJsonObject().get("points").toString() : null;
       this.isValid = isValid;
    }
 
@@ -82,7 +82,7 @@ public class DirectionInformation
     * 
     * @return distance in meters
     */
-   public double getDistance()
+   public String getDistance()
    {
       return distance;
    }
@@ -109,9 +109,18 @@ public class DirectionInformation
     * 
     * @return full route details
     */
-   public DirectionsRoute getRouteDetails()
+   public JsonObject getRouteDetails()
    {
       return route;
+   }
+
+   /**
+    * @return polyline encoding of directions
+    * 
+    */
+   public String getPolyline()
+   {
+      return polyLine;
    }
 
    /**
