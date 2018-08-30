@@ -27,6 +27,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.maps.errors.ApiException;
+import com.ibm.cfc.godsplan.cloudant.model.SurveyContext;
 import com.ibm.cfc.godsplan.disaster.DisasterInformation;
 import com.ibm.cfc.godsplan.disaster.DisasterProximityCalculator;
 import com.ibm.cfc.godsplan.http.BasicHttpClient;
@@ -69,6 +70,23 @@ public class MapboxClient
    public final String FINAL_DESTINATION = "You have arrived at your destination";
    /***/
    public final int SECONDS_IN_A_MINUTE = 60;
+   
+   /***/
+   @SuppressWarnings("javadoc")
+   public enum Severity {
+      LOWEST(1), LOW(2), MEDIUM(3), HIGH(4), HIGHEST(5);
+      private final int value;
+      private Severity(int value) {
+          this.value = value;
+      }
+
+      /**
+       * @return the int value
+       */
+      public int getValue() {
+          return value;
+      }
+  }
 
    /***/
    public MapboxClient()
@@ -118,7 +136,7 @@ public class MapboxClient
          BasicHttpResponse response = httpClient.executePut(
                "/datasets/v1/" + MAPBOX_USER + "/" + MAPBOX_DATASET + "/features/" + id, jsonObject.toString(),
                getDefaultQueryParams());
-         if (response.getStatusCode() != 200)
+         if (response.getStatusCode() != 200 || response.getStatusCode() != 201)
          {
             logger.error("Received error from MapboxAPI: {}" + response.getEntity());
          }
@@ -308,5 +326,35 @@ public class MapboxClient
       }
 
       System.out.println(gson.toJson(infomein.getRouteDetails()));
+   }
+
+   /**
+    * @param surveyContext
+    * @return the severity based on this survey context
+    */
+   public static int generateSeverity(SurveyContext surveyContext)
+   {
+      if (surveyContext.getMustEvacuate() && surveyContext.getIsInjured())
+      {
+         return 5;
+      }
+
+      else if (surveyContext.getMustEvacuate() && !surveyContext.getIsInjured() && !surveyContext.getHasVehicle())
+      {
+         return 4;
+      }
+      else if (surveyContext.getMustEvacuate() && !surveyContext.getIsInjured() && surveyContext.getHasVehicle())
+      {
+         return 3;
+      }
+      else if (!surveyContext.getMustEvacuate() && !surveyContext.getHasVehicle())
+      {
+         return 2;
+      }
+      else if (!surveyContext.getMustEvacuate() && surveyContext.getHasVehicle())
+      {
+         return 1;
+      }
+      return 0;
    }
 }

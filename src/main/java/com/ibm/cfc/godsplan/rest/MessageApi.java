@@ -25,7 +25,6 @@ import com.ibm.cfc.godsplan.cloudant.model.LocationContext;
 import com.ibm.cfc.godsplan.cloudant.model.ShelterLocationContext;
 import com.ibm.cfc.godsplan.disaster.DisasterProximityCalculator;
 import com.ibm.cfc.godsplan.mapbox.MapboxClient;
-import com.ibm.cfc.godsplan.mapbox.MapboxSeverity;
 import com.ibm.cfc.godsplan.maps.LocationMapper;
 import com.ibm.cfc.godsplan.maps.model.GoogleAddressInformation;
 import com.ibm.watson.developer_cloud.assistant.v1.model.Context;
@@ -46,7 +45,7 @@ public class MessageApi extends HttpServlet
 	private static final long serialVersionUID = 1L;
 	protected static final Logger logger = LoggerFactory.getLogger(MessageApi.class);
 	private static LocationMapper mapper = new LocationMapper();
-	private static MapboxClient client = new MapboxClient();
+	private static MapboxClient mapboxClient = new MapboxClient();
 
 	/**
 	 * @throws IOException
@@ -230,6 +229,7 @@ public class MessageApi extends HttpServlet
 			if (isUserOutsideDisasterZone(isPositiveConfirmation, metadata, userAddress.get()))
 			{
 				clearMetadata(metadata, userPhoneNumber);
+				mapboxClient.updatePerson(userPhoneNumber, MapboxClient.Severity.LOWEST.getValue());
 				response = new QueryResponse(
 						"You are not in immediate danger. Please keep safe and stay in your location. Respond back if your location changes.");
 			}
@@ -354,8 +354,8 @@ public class MessageApi extends HttpServlet
 		else if (position.equals(ResponsePosition.NO_VEHICLE_ENDPOINT)
 				|| position.equals(ResponsePosition.VEHICLE_WITH_SPACE_ENDPOINT))
 		{
-			int severity = MapboxSeverity.generateSeverity(metadata.retrieveSurveyContext(userPhoneNumber).get());
-
+			int severity = MapboxClient.generateSeverity(metadata.retrieveSurveyContext(userPhoneNumber).get());
+			mapboxClient.updatePerson(userPhoneNumber, severity);
 		}
 	}
 
@@ -368,7 +368,7 @@ public class MessageApi extends HttpServlet
 		{
 			GoogleAddressInformation addressInfoElement = addressInfo.get(0);
 			metadata.persistAddress(userPhoneNumber, addressInfoElement);
-			client.addPerson(userPhoneNumber, addressInfoElement.getLongitude(), addressInfoElement.getLatitude());
+			mapboxClient.addPerson(userPhoneNumber, addressInfoElement.getLongitude(), addressInfoElement.getLatitude());
 			String formattedAddress = addressInfoElement.getFormattedAddress().trim();
 			mediaURI = Optional.of(mapper.getGoogleImageURI(formattedAddress));
 			response += " [" + formattedAddress + "]";
