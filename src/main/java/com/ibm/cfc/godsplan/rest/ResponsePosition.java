@@ -12,61 +12,60 @@
 package com.ibm.cfc.godsplan.rest;
 
 /**
- * an enum to denote the important conversation positions we need to keep track
- * of.
+ * an enum to denote the important conversation positions we need to keep track of.
  */
 public enum ResponsePosition
 {
-	/** first response */
-	ASSISTANCE_CONFIRMATION("Welcome"),
-	/** second response */
-	ADDRESS_INPUT("node_1_1534430223721"),
-	/** third response */
-	ADDRESS_CONFIRMATION("node_2_1534964907188"),
-	/** fourth response */
-	INJURY_CONFIRMATION("node_4_1534430386010"),
-	/***/
-	HAS_SPACE_IN_VEHICLE("node_2_1534459022264"),
-	/***/
-	HAS_VEHICLE("node_1_1534458458160"),
-	/***/
-	NO_VEHICLE_ENDPOINT("node_3_1534459068774"),
-	/**/
-	VEHICLE_WITH_SPACE_ENDPOINT("node_4_1534459146359"),
-	/***/
-	OTHER("");
+   /** first response */
+   ASSISTANCE_CONFIRMATION("Welcome"),
+   /** second response */
+   ADDRESS_INPUT("node_1_1534430223721"),
+   /** third response */
+   ADDRESS_CONFIRMATION("node_2_1534964907188"),
+   /** fourth response */
+   INJURY_CONFIRMATION("node_4_1534430386010"),
+   /***/
+   ABLE_TO_EVACUATE_CONFIRMATION("node_2_1534459022264"),
+   /***/
+   ABLE_TO_EVACUATE("node_1_1534458458160"),
+   /***/
+   NO_VEHICLE_ENDPOINT("node_3_1534459068774"),
+   /**/
+   VEHICLE_WITH_SPACE_ENDPOINT("node_4_1534459146359"),
+   /***/
+   OTHER("");
 
-	private final String nodeID;
+   private final String nodeID;
 
-	private ResponsePosition(String watsonAssistantNodeID)
-	{
-		this.nodeID = watsonAssistantNodeID;
-	}
+   private ResponsePosition(String watsonAssistantNodeID)
+   {
+      this.nodeID = watsonAssistantNodeID;
+   }
 
-	/**
-	 * @param nodeID
-	 * @return ConversationPosition that matches the nodeID
-	 */
-	public static ResponsePosition getPosition(String nodeID)
-	{
-		ResponsePosition pos = ResponsePosition.OTHER;
-		for (ResponsePosition position : ResponsePosition.values())
-		{
-			if (nodeID.contains(position.getNodeID()))
-			{
-				pos = position;
-				break;
-			}
-		}
-		return pos;
-	}
+   /**
+    * @param nodeID
+    * @return ConversationPosition that matches the nodeID
+    */
+   public static ResponsePosition getPosition(String nodeID)
+   {
+      ResponsePosition pos = ResponsePosition.OTHER;
+      for (ResponsePosition position : ResponsePosition.values())
+      {
+         if (nodeID.contains(position.getNodeID()))
+         {
+            pos = position;
+            break;
+         }
+      }
+      return pos;
+   }
 
-	/**
-	 * @return this {@link ResponsePosition} nodeID
-	 */
-	public String getNodeID()
-	{
-		return nodeID;
-	}
+   /**
+    * @return this {@link ResponsePosition} nodeID
+    */
+   public String getNodeID()
+   {
+      return nodeID;
+   }
 
 }

@@ -186,15 +186,15 @@ public class MessageApi extends HttpServlet
          response = confirmResponse(isPositiveConfirmation(smsTxtBody), userPhoneNumber, metadata, watsonResponse,
                ResponsePosition.INJURY_CONFIRMATION);
       }
-      else if (position.equals(ResponsePosition.HAS_VEHICLE))
+      else if (position.equals(ResponsePosition.ABLE_TO_EVACUATE))
       {
          response = confirmResponse(isPositiveConfirmation(smsTxtBody), userPhoneNumber, metadata, watsonResponse,
-               ResponsePosition.HAS_VEHICLE);
+               ResponsePosition.ABLE_TO_EVACUATE);
       }
-      else if (position.equals(ResponsePosition.HAS_SPACE_IN_VEHICLE))
+      else if (position.equals(ResponsePosition.ABLE_TO_EVACUATE_CONFIRMATION))
       {
-         response = confirmResponse(isPositiveConfirmation(smsTxtBody), userPhoneNumber, metadata, watsonResponse,
-               ResponsePosition.HAS_SPACE_IN_VEHICLE);
+         logger.info("No vehicle endpoint reached sending directions to {}", userPhoneNumber);
+         response = getDirectionsResponse(userPhoneNumber, metadata, mediaURI, watsonResponse);
       }
       else if (position.equals(ResponsePosition.NO_VEHICLE_ENDPOINT))
       {
@@ -340,11 +340,11 @@ public class MessageApi extends HttpServlet
       {
          metadata.persistInjuryConfirmation(userPhoneNumber, confirmation);
       }
-      else if (position.equals(ResponsePosition.HAS_VEHICLE))
+      else if (position.equals(ResponsePosition.ABLE_TO_EVACUATE))
       {
          metadata.persistHasVehicle(userPhoneNumber, confirmation);
       }
-      else if (position.equals(ResponsePosition.HAS_SPACE_IN_VEHICLE))
+      else if (position.equals(ResponsePosition.ABLE_TO_EVACUATE_CONFIRMATION))
       {
          metadata.persistHasSpace(userPhoneNumber, confirmation);
       }
