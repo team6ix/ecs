@@ -30,6 +30,10 @@ public enum ResponsePosition
 	/***/
 	HAS_VEHICLE("node_1_1534458458160"),
 	/***/
+	NO_VEHICLE_ENDPOINT("node_3_1534459068774"),
+	/**/
+	VEHICLE_WITH_SPACE_ENDPOINT("node_4_1534459146359"),
+	/***/
 	OTHER("");
 
 	private final String nodeID;
