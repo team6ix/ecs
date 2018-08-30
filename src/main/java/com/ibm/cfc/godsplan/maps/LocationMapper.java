@@ -30,6 +30,7 @@ import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
 import com.ibm.cfc.godsplan.mapbox.model.DirectionInformation;
 import com.ibm.cfc.godsplan.maps.model.GoogleAddressInformation;
+import com.mapbox.api.directions.v5.DirectionsCriteria;
 import com.mapbox.geojson.Point;
 
 /**
@@ -130,7 +131,8 @@ public class LocationMapper
       boolean isValid = true;
       List<String> stepsList;
       String distance = "";
-      String tProfile = profile.isPresent() ? "mode=" + profile.get() + "&" : "";
+      String tProfile = profile.isPresent() ? profile.get() : DirectionsCriteria.PROFILE_WALKING;
+      tProfile = "mode=" + tProfile + "&";
       String start = origin.latitude() + "," + origin.longitude();
       String end = dest.latitude() + "," + dest.longitude();
 
