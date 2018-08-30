@@ -13,15 +13,20 @@ package com.ibm.cfc.godsplan.cloudant;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.cloudant.client.api.Database;
+import com.cloudant.client.api.views.AllDocsRequestBuilder;
 import com.cloudant.client.org.lightcouch.NoDocumentException;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.ibm.cfc.godsplan.cloudant.model.DisasterLocationContext;
 import com.ibm.cfc.godsplan.cloudant.model.LocationContext;
+import com.ibm.cfc.godsplan.cloudant.model.ShelterLocationContext;
 import com.ibm.cfc.godsplan.maps.model.GoogleAddressInformation;
 
 /**
@@ -111,13 +116,13 @@ public class ShelterLocationsPersistence
     * @param phoneNumber
     * @return Optional<LocationContext>
     */
-   public Optional<LocationContext> retrieve(String phoneNumber)
+   public Optional<ShelterLocationContext> retrieve(String phoneNumber)
    {
       logger.info("retrieving address information for '{}'", phoneNumber);
-      Optional<LocationContext> locationContext;
+      Optional<ShelterLocationContext> locationContext;
       try
       {
-         locationContext = Optional.of(db.find(LocationContext.class, phoneNumber));
+         locationContext = Optional.of(db.find(ShelterLocationContext.class, phoneNumber));
       }
       catch (NoDocumentException nde)
       {
@@ -126,6 +131,29 @@ public class ShelterLocationsPersistence
       }
 
       return locationContext;
+   }
+
+   /**
+    * 
+    * @return a list of all shelters
+    */
+   public List<ShelterLocationContext> retrieveAll()
+   {
+      logger.info("retrieving all shelter locations");
+
+      AllDocsRequestBuilder builder = db.getAllDocsRequestBuilder();
+      List<ShelterLocationContext> shelterLocations = new ArrayList<>();
+
+      try
+      {
+         shelterLocations = builder.includeDocs(true).build().getResponse().getDocsAs(ShelterLocationContext.class);
+      }
+      catch (IOException e)
+      {
+         e.printStackTrace();
+      }
+
+      return shelterLocations;
    }
    
    /**

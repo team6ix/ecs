@@ -63,10 +63,11 @@ public class Example
 		 p.retrieveSurveyContext(CLIENT_PHONE_NUMBER);
 		 System.out.println(context.get().toString());
 		 
-		 p.persistFireLocation(1, new Coordinates(1,2));
+		 p.persistFireLocation("1", new Coordinates(1,2));
 		 List<DisasterLocationContext> l = p.retrieveDisasterLocations();
 		 l.forEach(e -> System.out.println(e));
 		 p.persistShelterLocation("1", addresses.get(0));
+		 p.persistShelterLocation("2", addresses.get(0));
 		 p.shutdown();
 
 		// String imageURI =

@@ -10,6 +10,7 @@ import com.cloudant.client.api.CloudantClient;
 import com.ibm.cfc.godsplan.cloudant.model.ChatContext;
 import com.ibm.cfc.godsplan.cloudant.model.DisasterLocationContext;
 import com.ibm.cfc.godsplan.cloudant.model.LocationContext;
+import com.ibm.cfc.godsplan.cloudant.model.ShelterLocationContext;
 import com.ibm.cfc.godsplan.cloudant.model.SurveyContext;
 import com.ibm.cfc.godsplan.maps.model.GoogleAddressInformation;
 import com.ibm.watson.developer_cloud.assistant.v1.model.Context;
@@ -23,7 +24,7 @@ public class CloudantPersistence
 	private LocationPersistence locationDb;
 	private SurveyPersistence surveyDb;
 	private ShelterLocationsPersistence shelterLocationsDb;
-	private FireLocationsPersistence fireLocationsDb;
+	private DisasterLocationsPersistence disasterLocationsDb;
 
 	private CloudantClient client;
 
@@ -42,7 +43,7 @@ public class CloudantPersistence
 		locationDb = new LocationPersistence(client.database(LocationPersistence.DB, false));
 		surveyDb = new SurveyPersistence(client.database(SurveyPersistence.DB, false));
 		shelterLocationsDb = new ShelterLocationsPersistence(client.database(ShelterLocationsPersistence.DB, false));
-		fireLocationsDb = new FireLocationsPersistence(client.database(FireLocationsPersistence.DB, false));
+		disasterLocationsDb = new DisasterLocationsPersistence(client.database(DisasterLocationsPersistence.DB, false));
 
 	}
 
@@ -174,9 +175,9 @@ public class CloudantPersistence
 	 * @param id
 	 * @param coordinates
 	 */
-	public void persistFireLocation(int id, Coordinates coordinates)
+	public void persistFireLocation(String id, Coordinates coordinates)
 	{
-	   fireLocationsDb.persist(id, coordinates);
+	   disasterLocationsDb.persist(id, coordinates);
 	}
 	
 	/**
@@ -186,12 +187,25 @@ public class CloudantPersistence
 	 */
 	public Optional<DisasterLocationContext> retrieve(String id)
 	{
-	   return fireLocationsDb.retrieve(id);
+	   return disasterLocationsDb.retrieve(id);
 	}
 	
+	/**
+	 * 
+	 * @return list of all disaster locations
+	 */
 	public List<DisasterLocationContext> retrieveDisasterLocations()
 	{
-	   return fireLocationsDb.retrieveAll();
+	   return disasterLocationsDb.retrieveAll();
+	}
+	
+	/**
+	 * 
+	 * @return list of all shelter locations
+	 */
+	public List<ShelterLocationContext> retrieveShelterLocations()
+	{
+	   return shelterLocationsDb.retrieveAll();
 	}
 	
 	/**

@@ -16,7 +16,7 @@ import com.ibm.cfc.godsplan.maps.model.GoogleAddressInformation;
 /**
  * 
  */
-public class EvacuationLocationContext
+public class ShelterLocationContext
 {
    private String _id;
    private GoogleAddressInformation location;
