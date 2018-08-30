@@ -46,7 +46,7 @@ public class LocationMapper
    private static final String URL_GMAP_API = "https://maps.googleapis.com/maps/api/staticmap?center={0}&zoom=13&size={1}&"
          + "markers=color:red%7Clabel:S%7C{0}&key={2}";
    private static final String URL_GMAP_DIRECTIONS_API = "https://maps.googleapis.com/maps/api/staticmap"
-         + "?size={0}&path=weight:3%7Ccolor:orange%7Cenc:{1}&key={2}";
+         + "?size={0}&path=weight:3%7Ccolor:red%7Cenc:{1}&key={2}";
    protected static final Logger logger = LoggerFactory.getLogger(LocationMapper.class);
 
    /**
@@ -136,6 +136,7 @@ public class LocationMapper
       String start = origin.latitude() + "," + origin.longitude();
       String end = dest.latitude() + "," + dest.longitude();
 
+      // Directions url call
       String url = MessageFormat.format(
             "https://maps.googleapis.com/maps/api/directions/json?origin={0}&destination={1}&{2}key={3}", start, end,
             tProfile, key);
@@ -150,7 +151,7 @@ public class LocationMapper
       }
       catch (ParseException | IOException e)
       {
-         logger.info("What the guatemala unable to retrieve response content");
+         logger.error("What the guatemala unable to retrieve response content");
          e.printStackTrace();
          entity = "";
       }
@@ -178,7 +179,8 @@ public class LocationMapper
          String direction = "{0}, continue for {1}.";
          String htmlInstruction = step.get("html_instructions").getAsString();
          String instruction = StringEscapeUtils.unescapeHtml4(htmlInstruction);
-         instruction = instruction.replaceAll("\\<.\\>", "").replaceAll("\\<\\/.\\>", "");
+         instruction = instruction.replaceAll("\\<.\\>", "").replaceAll("\\<\\/.\\>", "")
+               .replaceAll("\\<div.*\\\\\"\\>", "").replaceAll("\\<\\/div\\>", "");
 
          stepList.add(MessageFormat.format(direction, instruction, distance));
       }

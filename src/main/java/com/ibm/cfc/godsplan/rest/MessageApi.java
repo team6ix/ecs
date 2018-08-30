@@ -190,23 +190,24 @@ public class MessageApi extends HttpServlet
       {
          logger.info("Able to evacuate endpoint reached sending directions to {}", userPhoneNumber);
          response = getDirectionsResponse(userPhoneNumber, metadata, mediaURI, watsonResponse);
-         //         response = confirmResponse(isPositiveConfirmation(smsTxtBody), userPhoneNumber, metadata, watsonResponse,
-         //               ResponsePosition.ABLE_TO_EVACUATE);
       }
       else if (position.equals(ResponsePosition.ABLE_TO_EVACUATE_CONFIRMATION))
       {
-         logger.info("Able to evacuate endpoint reached sending directions to {}", userPhoneNumber);
-         response = getDirectionsResponse(userPhoneNumber, metadata, mediaURI, watsonResponse);
+         //Unreachable?
+         response = confirmResponse(isPositiveConfirmation(smsTxtBody), userPhoneNumber, metadata, watsonResponse,
+               ResponsePosition.ABLE_TO_EVACUATE_CONFIRMATION);
       }
       else if (position.equals(ResponsePosition.NO_VEHICLE_ENDPOINT))
       {
-         logger.info("No vehicle endpoint reached sending directions to {}", userPhoneNumber);
-         response = getDirectionsResponse(userPhoneNumber, metadata, mediaURI, watsonResponse);
+         //Unreachable?
+         response = confirmResponse(isPositiveConfirmation(smsTxtBody), userPhoneNumber, metadata, watsonResponse,
+               ResponsePosition.NO_VEHICLE_ENDPOINT);
       }
       else if (position.equals(ResponsePosition.VEHICLE_WITH_SPACE_ENDPOINT))
       {
-         logger.info("Vehicle with space endpoint received sending directions to {}", userPhoneNumber);
-         response = getDirectionsResponse(userPhoneNumber, metadata, mediaURI, watsonResponse);
+         //Unreachable?
+         response = confirmResponse(isPositiveConfirmation(smsTxtBody), userPhoneNumber, metadata, watsonResponse,
+               ResponsePosition.VEHICLE_WITH_SPACE_ENDPOINT);
       }
       else
       {
@@ -401,7 +402,7 @@ public class MessageApi extends HttpServlet
       response += "[Directions to Shelter: ";
       for (String direction : info.getDirections())
       {
-         response += direction;
+         response += direction + "%0a";
       }
       response += "]";
       mediaURI = Optional.of(mapper.getGoogleImageURI(formattedLocation, Optional.of(info)));
