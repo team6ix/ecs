@@ -215,7 +215,7 @@ public class MessageApi extends HttpServlet
          {
             clearMetadata(metadata, userPhoneNumber);
             response = new QueryResponse(
-                  "You are not in immediate danger. Please keep safe and stay in your location. Response back if your status changes.");
+                  "You are not in immediate danger. Please keep safe and stay in your location. Respond back if your location changes.");
          }
       }
       else
