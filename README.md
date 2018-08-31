@@ -1,9 +1,18 @@
 Emergency Chat Services
 
+# Using the app
+
 An application for providing information and instruction for those in need during disaster situations via SMS and MMS.
 
 To manually trigger a conversation, send an SMS message to:
 647-697-3928
+This operates out of the dataset of fires and shelters which are viewable in the Disaster Admin Console here:
+https://team6ixapp.mybluemix.net/
+
+Ensure that you clear your cache when viewing the Disaster Admin Console.
+
+
+# Development
 
 Main entry point to the application --> MessageApi.java
 
