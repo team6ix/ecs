@@ -1,6 +1,6 @@
 Emergency Chat Services
 
-An application for aiding those in need via SMS and MMS when an emergency occurs which may need evactuation of an area. 
+An application for providing information and instruction for those in need during disaster situations via SMS and MMS.
 Main entry point to the application --> MessageApi.java
 
 1) RescueBot Watson Chat Assistant workspace --> https://assistant-us-south.watsonplatform.net/us-south/4675dcda-7ce8-4c56-a000-421c223dfdd0/workspaces/e9fc9a95-fbfb-4210-b8e8-bd40cb3bebe2/build/intents
