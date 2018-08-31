@@ -9,7 +9,7 @@ To manually trigger a conversation, send an SMS message to: 647-697-3928.
 This operates out of the dataset of fires and shelters which are viewable in the Disaster Admin Console here:
 https://team6ixapp.mybluemix.net/
 
-To reset the conversation, text "Clear".  Clear your cache when visiting the Disaster Admin Console in the event of slow updates.
+To reset the conversation, text "Clear".  In the event of the live map updating too slowly, clear your cache.
 
 # Development
 
