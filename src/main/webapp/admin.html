@@ -3,16 +3,40 @@
 <head>
   <meta charset='utf-8' />
   <title>Disaster Admin Console</title>
-  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-  <style>
-    body { margin:0; padding:0; }
-    #map { position:absolute; top:0; bottom:0; width:100%; }
-  </style>
+  <link rel="stylesheet" href="./style/admin.css">
+  <link rel="stylesheet" href="./style/adminButtons.css">
+  <link rel="stylesheet" href="./style/shelterButton.css">
+  <link rel="stylesheet" href="./style/disasterButton.css">
 </head>
 <body>
 
-<div id='map'></div>
-<p> THIS IS ADMIN TINGS </p>
+<ul>
+  <li><a href="index.html">Overview</a></li>
+</ul>
 
+<div id='input'>
+	<div id='shelter'>
+		<form action="/addShelter">
+		
+			<label class="shelterInput" for="sname">Shelter Name:</label><br>
+			<input class="shelterInput" type="text" id="sname" name="sname"><br>
+		
+			<label class="shelterInput" for="saddr">Shelter Address:</label><br>
+			<input class="shelterInput" type="text" id="saddr" name="saddr"><br>
+		
+			<a href="#" id="shelterButton" class="button tick" type="submit" ></a>
+		</form>
+	</div>
+	
+	<div id='disasters'>
+		<form action="/addDisaster">
+
+			<label class="disasterInput" for="daddr">Disaster Address:</label><br>
+			<input class="disasterInput" type="text" id="daddr" name=daddr><br>
+		
+			<a href="#" id="disasterButton" class="button tick" type="submit" ></a>
+		</form>
+	</div>
+</div>
 </body>
 </html>

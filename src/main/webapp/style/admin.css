@@ -1,0 +1,108 @@
+html {
+	height: 100%;
+}
+
+body {
+	background-image: url("http://miic.ca/wp-content/uploads/2015/10/6993802-black-world-map.jpg");
+	background-size: 100%; /* Resize the background image to cover the entire container */
+  	background-repeat: no-repeat; /* Do not repeat the image */
+  	height: 100%;
+}
+
+p {
+	color: blue;
+}
+
+ul {
+	z-index: 99 !important;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+    width: 95px;
+    float: right;
+    
+}
+
+li {
+    float: right;
+    border-right: 1px solid #bbb;
+}
+
+li:first-child {
+    border-right: none;
+}
+
+li a {
+    display: block;
+    color: teal;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    
+}
+
+/* Change the link color to #111 (black) on hover */
+li a:hover {
+    background-color: #166;
+}
+
+#shelter {
+	float: left;
+	width: 180px;
+	height: 210px;
+	margin-left: 192px;
+    border: 5px solid teal;
+    
+    text-align: center;
+    background: rgba(0, 128, 128, 0.85);
+    padding: 10px 0 0 0;
+}
+
+#disasters {
+	width: 180px;
+	height: 210px;
+    border: 5px solid teal;
+    padding: 10px 0 0 0;
+    
+    text-align: center;
+    background: rgba(0, 128, 128, 0.85);
+    padding: 10px 0 0 0;
+    position: relative;
+}
+
+#input {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	-webkit-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+}
+
+input[type="text"].shelterInput {
+	display: block;
+	margin: 0 auto;
+}
+
+label.shelterInput {
+	color: white;
+	margin: 0 auto;
+	font: bold 1.1em/0.6 Helvetical, Arial, sans-serif;
+	text-shadow: -1px -1px 1px #000
+}
+
+input[type="text"].disasterInput {
+	top: 30%;
+	left: 10%;
+	position: absolute;
+}
+
+label.disasterInput {
+	color: white;
+	font: bold 1.1em/0.6 Helvetical, Arial, sans-serif;
+	text-shadow: -1px -1px 1px #000;
+	top: 20%;
+	left: 10%;
+	position: absolute;
+}

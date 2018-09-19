@@ -6,23 +6,26 @@
   <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
   <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.46.0/mapbox-gl.js'></script>
   <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.46.0/mapbox-gl.css' rel='stylesheet' />
-  <style>
-    body { margin:0; padding:0; }
-    #map { position:absolute; top:0; bottom:0; width:100%; }
-  </style>
+  <link rel="stylesheet" href="./style/overview.css">
 </head>
 <body>
 
-<div id='map'></div>
-<script>
-mapboxgl.accessToken = 'pk.eyJ1IjoidGVhbTZpeCIsImEiOiJjamw0Mm1udmQyN2dhM2xsbXF6dzdwZDcyIn0.H2cx_ij8DRcSHtXeOMxVlg';
-const map = new mapboxgl.Map({
-  container: 'map',
-  style: 'mapbox://styles/team6ix/cjlft2xng6v7p2slue32dipod',
-  center: [-79.367442, 43.726163],
-  zoom: 11.0
-});
-</script>
+<div id="container">
+	<ul id="overview_toolbar">
+	  <li><a href="admin.html">Add Data</a></li>
+	</ul>
+	
+	<div id='map'></div>
+	<script>
+	mapboxgl.accessToken = 'pk.eyJ1IjoidGVhbTZpeCIsImEiOiJjamw0Mm1udmQyN2dhM2xsbXF6dzdwZDcyIn0.H2cx_ij8DRcSHtXeOMxVlg';
+	const map = new mapboxgl.Map({
+	  container: 'map',
+	  style: 'mapbox://styles/team6ix/cjlft2xng6v7p2slue32dipod',
+	  center: [-79.367442, 43.726163],
+	  zoom: 11.0
+	});
+	</script>
+</div>
 
 </body>
 </html>
