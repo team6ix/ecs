@@ -9,19 +9,18 @@ body {
   	height: 100%;
 }
 
-p {
-	color: blue;
-}
-
 ul {
 	z-index: 99 !important;
     list-style-type: none;
-    margin: 0;
+    margin-top: 0;
+    margin-right: 0;
+    margin-left: auto;
     padding: 0;
     overflow: hidden;
     background-color: #333;
     width: 95px;
     float: right;
+    position: relative;
     
 }
 
@@ -94,7 +93,8 @@ label.shelterInput {
 
 input[type="text"].disasterInput {
 	top: 30%;
-	left: 10%;
+	left: 13%;
+	margin: 0 auto;
 	position: absolute;
 }
 
