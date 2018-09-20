@@ -53,6 +53,7 @@ public class ShelterApi extends HttpServlet
 			logger.error("Uncaught Exception", e);
 			throw e;
 		}
+      mapboxClient.addShelter(id, addressInfoElement.getLongitude(), addressInfoElement.getLatitude());
 	}
 
 	private void addPointCloudant(GoogleAddressInformation address, CloudantPersistence metadata, String id)

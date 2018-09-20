@@ -46,6 +46,7 @@ public class DisasterApi extends HttpServlet
 			logger.error("Uncaught Exception", e);
 			throw e;
 		}
+		mapboxClient.addDisaster(id, coordinates.getLongitude(), coordinates.getLatitude());
 	}
 
 	private void addPointCloudant(Coordinates coordinates, CloudantPersistence metadata, String id)
