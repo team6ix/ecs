@@ -53,14 +53,6 @@ public class MapboxClient
    /***/
    public static final String MAPBOX_API_TOKEN = System.getenv("MAPBOX_API_TOKEN");
    /***/
-   public static final String MAPBOX_USER = "team6ix";
-   /***/
-   public static final String MAPBOX_DATASET = "cjl565k8f0pc62wnxgggh6gc4";
-   /***/
-   public static final String MAPBOX_TILESET = "team6ix.cjl565k8f0pc62wnxgggh6gc4-6yi10";
-   /***/
-   public static final String MAPBOX_TILESET_NAME = "TorontoDisaster";
-   /***/
    public static BasicHttpClient httpClient;
    /***/
    public final String FINAL_DESTINATION = "You have arrived at your destination";
@@ -100,19 +92,76 @@ public class MapboxClient
          logger.error("Error creating connection to Mapbox.", e);
       }
    }
-
+   
    /**
     * 
     * @param id
-    * @param xCoordinate
-    * @param yCoordinate
-    * @param featureId
+    * @param longitude
+    * @param latitude
     * @throws HttpException
     */
-   public void addPerson(String id, double xCoordinate, double yCoordinate)
+   public void addDisaster(String id, double longitude, double latitude)
    {
-      logger.info("Adding id {} to admin map with x coordinate {} and y coordinate {}", id, xCoordinate, yCoordinate);
+      JsonObject jsonObject = new JsonObject();
+      jsonObject.addProperty("id", id);
+      jsonObject.addProperty("type", "Feature");
 
+      JsonObject geometryJson = new JsonObject();
+      geometryJson.addProperty("type", "Point");
+
+      JsonObject propertiesJson = new JsonObject();
+
+      JsonArray coordinates = new JsonArray();
+      coordinates.add(latitude);
+      coordinates.add(longitude);
+      geometryJson.add("coordinates", coordinates);
+
+      jsonObject.add("geometry", geometryJson);
+      jsonObject.add("properties", propertiesJson);
+      
+      addPointToDataset(id, longitude, latitude, MapboxUtils.MAPBOX_DISASTER_DATASET, jsonObject);
+      updateMap(MapboxUtils.MAPBOX_DISASTER_DATASET, MapboxUtils.MAPBOX_DISASTER_TILESET, MapboxUtils.MAPBOX_DISASTER_TILESET_NAME);
+   }
+   
+   /**
+    * 
+    * @param id
+    * @param longitude
+    * @param latitude
+    * @throws HttpException
+    */
+   public void addShelter(String id, double longitude, double latitude)
+   {
+      JsonObject jsonObject = new JsonObject();
+      jsonObject.addProperty("id", id);
+      jsonObject.addProperty("type", "Feature");
+
+      JsonObject geometryJson = new JsonObject();
+      geometryJson.addProperty("type", "Point");
+
+      JsonObject propertiesJson = new JsonObject();
+
+      JsonArray coordinates = new JsonArray();
+      coordinates.add(latitude);
+      coordinates.add(longitude);
+      geometryJson.add("coordinates", coordinates);
+
+      jsonObject.add("geometry", geometryJson);
+      jsonObject.add("properties", propertiesJson);
+      
+      addPointToDataset(id, longitude, latitude, MapboxUtils.MAPBOX_SHELTER_DATASET, jsonObject);
+      updateMap(MapboxUtils.MAPBOX_SHELTER_DATASET, MapboxUtils.MAPBOX_SHELTER_TILESET, MapboxUtils.MAPBOX_SHELTER_TILESET_NAME);
+   }
+   
+   /**
+    * 
+    * @param id
+    * @param longitude
+    * @param latitude
+    * @throws HttpException
+    */
+   public void addPerson(String id, double longitude, double latitude)
+   {
       JsonObject jsonObject = new JsonObject();
       jsonObject.addProperty("id", id);
       jsonObject.addProperty("type", "Feature");
@@ -124,19 +173,36 @@ public class MapboxClient
       propertiesJson.addProperty("severity", 5);
 
       JsonArray coordinates = new JsonArray();
-      coordinates.add(xCoordinate);
-      coordinates.add(yCoordinate);
+      coordinates.add(latitude);
+      coordinates.add(longitude);
       geometryJson.add("coordinates", coordinates);
 
       jsonObject.add("geometry", geometryJson);
       jsonObject.add("properties", propertiesJson);
+      
+      addPointToDataset(id, longitude, latitude, MapboxUtils.MAPBOX_DATASET, jsonObject);
+      updateMap(MapboxUtils.MAPBOX_DATASET, MapboxUtils.MAPBOX_TILESET, MapboxUtils.MAPBOX_TILESET_NAME);
+   }
 
+   /**
+    * 
+    * @param id
+    * @param longitude
+    * @param latitude
+    * @param dataset
+    * @param jsonObject
+    * @throws HttpException
+    */
+   public void addPointToDataset(String id, double longitude, double latitude, String dataset, JsonObject jsonObject)
+   {
+      logger.info("Adding id {} to admin map with x coordinate {} and y coordinate {} on dataset {}", id, longitude, latitude, dataset);
+      
       try
       {
          BasicHttpResponse response = httpClient.executePut(
-               "/datasets/v1/" + MAPBOX_USER + "/" + MAPBOX_DATASET + "/features/" + id, jsonObject.toString(),
+               "/datasets/v1/" + MapboxUtils.MAPBOX_USER + "/" + dataset + "/features/" + id, jsonObject.toString(),
                getDefaultQueryParams());
-         if (response.getStatusCode() != 200 || response.getStatusCode() != 201)
+         if (response.getStatusCode() != 200 && response.getStatusCode() != 201)
          {
             logger.error("Received error from MapboxAPI: {}" + response.getEntity());
          }
@@ -145,7 +211,6 @@ public class MapboxClient
       {
          logger.error("Could not save info to admin map.", e);
       }
-      updateMap();
    }
 
    /**
@@ -160,14 +225,14 @@ public class MapboxClient
       try
       {
          BasicHttpResponse response = httpClient.executeGet(
-               "/datasets/v1/" + MAPBOX_USER + "/" + MAPBOX_DATASET + "/features/" + id, getDefaultQueryParams());
+               "/datasets/v1/" + MapboxUtils.MAPBOX_USER + "/" + MapboxUtils.MAPBOX_DATASET + "/features/" + id, getDefaultQueryParams());
          JsonObject jsonObject = (new JsonParser()).parse(response.getEntity()).getAsJsonObject();
 
          JsonObject propertiesJson = new JsonObject();
          propertiesJson.addProperty("severity", severity);
          jsonObject.add("properties", propertiesJson);
 
-         response = httpClient.executePut("/datasets/v1/" + MAPBOX_USER + "/" + MAPBOX_DATASET + "/features/" + id,
+         response = httpClient.executePut("/datasets/v1/" + MapboxUtils.MAPBOX_USER + "/" + MapboxUtils.MAPBOX_DATASET + "/features/" + id,
                jsonObject.toString(), getDefaultQueryParams());
          if (response.getStatusCode() != 200)
          {
@@ -178,22 +243,23 @@ public class MapboxClient
       {
          logger.error("Could not save info to admin map.", e);
       }
-      updateMap();
    }
-
+   
    /**
-    * Sends request to update mapbox tileset
+    * @param dataset
+    * @param tileset 
+    * @param tilesetName 
     */
-   public void updateMap()
+   public void updateMap(String dataset, String tileset, String tilesetName)
    {
       try
       {
          JsonObject updateJson = new JsonObject();
-         updateJson.addProperty("tileset", MAPBOX_TILESET);
-         updateJson.addProperty("url", "mapbox://datasets/team6ix/" + MAPBOX_DATASET);
-         updateJson.addProperty("name", MAPBOX_TILESET_NAME);
+         updateJson.addProperty("tileset", tileset);
+         updateJson.addProperty("url", "mapbox://datasets/team6ix/" + dataset);
+         updateJson.addProperty("name", tilesetName);
 
-         BasicHttpResponse response = httpClient.executePost("/uploads/v1/" + MAPBOX_USER, updateJson.toString(),
+         BasicHttpResponse response = httpClient.executePost("/uploads/v1/" + MapboxUtils.MAPBOX_USER, updateJson.toString(),
                getDefaultQueryParams());
          if (response.getStatusCode() != 200)
          {
@@ -212,20 +278,6 @@ public class MapboxClient
       Map<String, String> map = new HashMap<>();
       map.put("access_token", MAPBOX_API_TOKEN);
       return map;
-   }
-
-   public static void main(String args[]) throws HttpException, IOException, ApiException, InterruptedException
-   {
-      MapboxClient client = new MapboxClient();
-      Gson gson = new GsonBuilder().setPrettyPrinting().create();
-      DisasterInformation info = DisasterInformation.getInstance();
-      info.addDisasterPoint(Point.fromLngLat(-79.338368, 43.848631));
-
-      LocationMapper mapper = new LocationMapper();
-      Point o = mapper.getGeocodingCoordinates("8200 Warden Ave");
-      Point d = mapper.getGeocodingCoordinates("First Markham Place");
-      File file = new File("./src/main/resources/directions.jpg");
-
    }
 
    /**
