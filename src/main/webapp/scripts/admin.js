@@ -1,13 +1,14 @@
-
 function submitShelter()
 {
-  console.log("Sending request to add new shelter");
-  document.shelterForm.submit();
+	alert("Sending request to add new shelter")
+	console.log("Sending request to add new shelter");
+	document.getElementById("shelterForm").submit();
 }
 
 function submitDisaster()
 {
-  console.log("Sending request to add new disaster");
-  document.disasterForm.submit();
+	alert("Sending request to add new disaster");
+	console.log("Sending request to add new disaster");
+	document.getElementById("disasterForm").submit();
 }
 
