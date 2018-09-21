@@ -243,6 +243,7 @@ public class MapboxClient
       {
          logger.error("Could not save info to admin map.", e);
       }
+      updateMap(MapboxUtils.MAPBOX_DATASET, MapboxUtils.MAPBOX_TILESET, MapboxUtils.MAPBOX_TILESET_NAME);
    }
    
    /**
