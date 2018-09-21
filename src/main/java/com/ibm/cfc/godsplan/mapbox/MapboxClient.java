@@ -112,8 +112,8 @@ public class MapboxClient
       JsonObject propertiesJson = new JsonObject();
 
       JsonArray coordinates = new JsonArray();
-      coordinates.add(latitude);
       coordinates.add(longitude);
+      coordinates.add(latitude);
       geometryJson.add("coordinates", coordinates);
 
       jsonObject.add("geometry", geometryJson);
@@ -142,8 +142,8 @@ public class MapboxClient
       JsonObject propertiesJson = new JsonObject();
 
       JsonArray coordinates = new JsonArray();
-      coordinates.add(latitude);
       coordinates.add(longitude);
+      coordinates.add(latitude);
       geometryJson.add("coordinates", coordinates);
 
       jsonObject.add("geometry", geometryJson);
@@ -173,8 +173,8 @@ public class MapboxClient
       propertiesJson.addProperty("severity", 5);
 
       JsonArray coordinates = new JsonArray();
-      coordinates.add(latitude);
       coordinates.add(longitude);
+      coordinates.add(latitude);
       geometryJson.add("coordinates", coordinates);
 
       jsonObject.add("geometry", geometryJson);
