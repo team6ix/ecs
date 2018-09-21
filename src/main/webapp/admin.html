@@ -4,9 +4,9 @@
   <meta charset='utf-8' />
   <title>Disaster Admin Console</title>
   <link rel="stylesheet" href="./style/admin.css">
-  <link rel="stylesheet" href="./style/adminButtons.css">
   <link rel="stylesheet" href="./style/shelterButton.css">
   <link rel="stylesheet" href="./style/disasterButton.css">
+  <script src="./scripts/admin.js" type="text/javascript"></script>
 </head>
 <body>
 
@@ -16,25 +16,25 @@
 
 <div id='input'>
 	<div id='shelter'>
-		<form action="/addShelter">
-		
-			<label class="shelterInput" for="sname">Shelter Name:</label><br>
-			<input class="shelterInput" type="text" id="sname" name="sname"><br>
-		
-			<label class="shelterInput" for="saddr">Shelter Address:</label><br>
-			<input class="shelterInput" type="text" id="saddr" name="saddr"><br>
-		
-			<a href="#" id="shelterButton" class="button tick" type="submit" ></a>
+	<p id="shelterTitle"> Shelter Location: </p>
+		<form id="shelterForm" method="POST" action="/shelter">
+			<label class="shelterInput" id="laddress">Shelter Address:</label><br>
+			<input class="shelterInput" type="text" id="address" name="address"><br>
+
+			<a href="javascript: submitShelter()" id="shelterButton" class="button tick" type="submit" ></a>
 		</form>
 	</div>
 	
 	<div id='disasters'>
-		<form action="/addDisaster">
-
-			<label class="disasterInput" for="daddr">Disaster Address:</label><br>
-			<input class="disasterInput" type="text" id="daddr" name=daddr><br>
+	<p id="disasterTitle"> Disaster Location: </p>
+		<form id="disasterForm" method="POST" action="/disaster">
+			<label class="disasterInput" for="latitude" id="llatitude">Latitude:</label><br>
+			<input class="disasterInput" type="text" id="latitude" name=daddr><br>
 		
-			<a href="#" id="disasterButton" class="button tick" type="submit" ></a>
+			<label class="disasterInput" for="longitude" id="llongitude">Longitude:</label><br>
+			<input class="disasterInput" type="text" id="longitude" name=daddr><br>
+			
+			<a href="javascript: submitDisaster()" id="disasterButton" class="button tick" type="submit" ></a>
 		</form>
 	</div>
 </div>

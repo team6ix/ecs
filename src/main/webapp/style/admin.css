@@ -9,6 +9,28 @@ body {
   	height: 100%;
 }
 
+#shelterTitle {
+	margin: 0 auto;
+	color: white;
+	text-decoration: underline;
+	font: bold 1.1em/0.6 Helvetical, Arial, sans-serif;
+	padding: 0;
+	padding-bottom: 30px;
+	position: relative;
+	text-shadow: -1px -1px 1px #000
+}
+
+#disasterTitle {
+	margin: 0 auto;
+	margin-left: 7%;
+	color: white;
+	text-decoration: underline;
+	font: bold 1.1em/0.6 Helvetical, Arial, sans-serif;
+	padding: 0;
+	position: absolute;
+	text-shadow: -1px -1px 1px #000
+}
+
 ul {
 	z-index: 99 !important;
     list-style-type: none;
@@ -17,11 +39,11 @@ ul {
     margin-left: auto;
     padding: 0;
     overflow: hidden;
-    background-color: #333;
     width: 95px;
     float: right;
     position: relative;
-    
+    	border: 5px solid teal;
+	background-color: #099;
 }
 
 li {
@@ -35,7 +57,7 @@ li:first-child {
 
 li a {
     display: block;
-    color: teal;
+    color: white;
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
@@ -50,7 +72,7 @@ li a:hover {
 #shelter {
 	float: left;
 	width: 180px;
-	height: 210px;
+	height: 250px;
 	margin-left: 192px;
     border: 5px solid teal;
     
@@ -61,7 +83,7 @@ li a:hover {
 
 #disasters {
 	width: 180px;
-	height: 210px;
+	height: 250px;
     border: 5px solid teal;
     padding: 10px 0 0 0;
     
@@ -79,30 +101,41 @@ li a:hover {
 	transform: translate(-50%, -50%);
 }
 
-input[type="text"].shelterInput {
-	display: block;
-	margin: 0 auto;
-}
-
-label.shelterInput {
-	color: white;
-	margin: 0 auto;
-	font: bold 1.1em/0.6 Helvetical, Arial, sans-serif;
-	text-shadow: -1px -1px 1px #000
-}
-
-input[type="text"].disasterInput {
-	top: 30%;
-	left: 13%;
-	margin: 0 auto;
+#latitude {
+	margin: 60% -200%;
 	position: absolute;
 }
 
-label.disasterInput {
+#llatitude {
 	color: white;
 	font: bold 1.1em/0.6 Helvetical, Arial, sans-serif;
 	text-shadow: -1px -1px 1px #000;
-	top: 20%;
-	left: 10%;
+	margin: 55% -190%;
+	position: absolute;
+}
+
+#longitude {
+	margin: 0 -200%;
+	position: absolute;
+}
+
+#llongitude {
+	color: white;
+	font: bold 1.1em/0.6 Helvetical, Arial, sans-serif;
+	text-shadow: -1px -1px 1px #000;
+	position: absolute;
+	margin: -5% -190%;
+}
+
+#address {
+	margin: 9% -19%;
+	position: absolute;
+}
+
+#laddress {
+	color: white;
+	font: bold 1.1em/0.6 Helvetical, Arial, sans-serif;
+	text-shadow: -1px -1px 1px #000;
+	margin: 7% -19%;
 	position: absolute;
 }
