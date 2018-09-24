@@ -33,7 +33,7 @@ public class ShelterApi extends HttpServlet
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException
 	{
-		logger.trace("POST request: {}", request);
+		logger.info("POST request: {}", request);
 		Instant startTime = Instant.now();
 		CloudantPersistence metadata = new CloudantPersistence();
 		String id = UUID.randomUUID().toString();

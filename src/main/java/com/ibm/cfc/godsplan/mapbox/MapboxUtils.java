@@ -17,6 +17,10 @@ package com.ibm.cfc.godsplan.mapbox;
 public class MapboxUtils
 {
    /***/
+   public static final String CONCURRENT_TILESET_MESSAGE = "Only one export at a time is allowed from a single dataset";
+   /***/
+   public static final String CONCURRENT_UPLOAD_MESSAGE = "Only one export at a time is allowed from a single dataset";
+   /***/
    public static final String MAPBOX_USER = "team6ix";
    /***/
    public static final String MAPBOX_DATASET = "cjl565k8f0pc62wnxgggh6gc4";

@@ -233,13 +233,16 @@ public class MessageApi extends HttpServlet
          {
             if (isUserOutsideDisasterZone(isPositiveConfirmation, metadata, userAddress.get()))
             {
+               mapboxClient.addPerson(userPhoneNumber, userAddress.get().getAddress().getLongitude(),
+                     userAddress.get().getAddress().getLatitude(), MapboxClient.Severity.LOWEST.getValue());
                clearMetadata(metadata, userPhoneNumber);
-               mapboxClient.updatePerson(userPhoneNumber, MapboxClient.Severity.LOWEST.getValue());
                response = new QueryResponse(
                      "You are not in immediate danger. Please keep safe and stay in your location. Respond back if your location changes.");
             }
             else
             {
+               mapboxClient.addPerson(userPhoneNumber, userAddress.get().getAddress().getLongitude(),
+                     userAddress.get().getAddress().getLatitude(), MapboxClient.Severity.HIGHEST.getValue());
                metadata.persistMustEvacuate(userPhoneNumber, true);
             }
          }
@@ -400,7 +403,6 @@ public class MessageApi extends HttpServlet
       {
          GoogleAddressInformation addressInfoElement = addressInfo.get(0);
          metadata.persistAddress(userPhoneNumber, addressInfoElement);
-         mapboxClient.addPerson(userPhoneNumber, addressInfoElement.getLongitude(), addressInfoElement.getLatitude());
          String formattedAddress = addressInfoElement.getFormattedAddress().trim();
          mediaURI = Optional.of(mapper.getGoogleImageURI(formattedAddress, Optional.empty()));
          response += " [" + formattedAddress + "]";
