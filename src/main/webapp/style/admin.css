@@ -108,7 +108,7 @@ li a:hover {
 
 #llatitude {
 	color: white;
-	font: bold 1.1em/0.6 Helvetical, Arial, sans-serif;
+	font: normal 1.1em/0.6 Helvetical, Arial, sans-serif;
 	text-shadow: -1px -1px 1px #000;
 	margin: 55% -190%;
 	position: absolute;
@@ -121,7 +121,7 @@ li a:hover {
 
 #llongitude {
 	color: white;
-	font: bold 1.1em/0.6 Helvetical, Arial, sans-serif;
+	font: normal 1.1em/0.6 Helvetical, Arial, sans-serif;
 	text-shadow: -1px -1px 1px #000;
 	position: absolute;
 	margin: -5% -190%;
@@ -134,7 +134,7 @@ li a:hover {
 
 #laddress {
 	color: white;
-	font: bold 1.1em/0.6 Helvetical, Arial, sans-serif;
+	font: normal 1.1em/0.6 Helvetical, Arial, sans-serif;
 	text-shadow: -1px -1px 1px #000;
 	margin: 7% -19%;
 	position: absolute;
