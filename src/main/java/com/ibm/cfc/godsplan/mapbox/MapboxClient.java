@@ -118,9 +118,10 @@ public class MapboxClient
 
       jsonObject.add("geometry", geometryJson);
       jsonObject.add("properties", propertiesJson);
-      
+
       addPointToDataset(id, longitude, latitude, MapboxUtils.MAPBOX_DISASTER_DATASET, jsonObject);
-      updateMap(MapboxUtils.MAPBOX_DISASTER_DATASET, MapboxUtils.MAPBOX_DISASTER_TILESET, MapboxUtils.MAPBOX_DISASTER_TILESET_NAME);
+      MapboxUpdateQueue.getInstance().add(new MapboxUpdateData(MapboxUtils.MAPBOX_DISASTER_DATASET,
+            MapboxUtils.MAPBOX_DISASTER_TILESET, MapboxUtils.MAPBOX_DISASTER_TILESET_NAME));
    }
    
    /**
@@ -150,7 +151,7 @@ public class MapboxClient
       jsonObject.add("properties", propertiesJson);
       
       addPointToDataset(id, longitude, latitude, MapboxUtils.MAPBOX_SHELTER_DATASET, jsonObject);
-      updateMap(MapboxUtils.MAPBOX_SHELTER_DATASET, MapboxUtils.MAPBOX_SHELTER_TILESET, MapboxUtils.MAPBOX_SHELTER_TILESET_NAME);
+      MapboxUpdateQueue.getInstance().add(new MapboxUpdateData(MapboxUtils.MAPBOX_SHELTER_DATASET, MapboxUtils.MAPBOX_SHELTER_TILESET, MapboxUtils.MAPBOX_SHELTER_TILESET_NAME));
    }
    
    /**
@@ -181,7 +182,8 @@ public class MapboxClient
       jsonObject.add("properties", propertiesJson);
       
       addPointToDataset(id, longitude, latitude, MapboxUtils.MAPBOX_DATASET, jsonObject);
-      updateMap(MapboxUtils.MAPBOX_DATASET, MapboxUtils.MAPBOX_TILESET, MapboxUtils.MAPBOX_TILESET_NAME);
+      MapboxUpdateQueue.getInstance().add(new MapboxUpdateData(MapboxUtils.MAPBOX_DATASET, MapboxUtils.MAPBOX_TILESET,
+            MapboxUtils.MAPBOX_TILESET_NAME));
    }
 
    /**
@@ -243,7 +245,7 @@ public class MapboxClient
       {
          logger.error("Could not save info to admin map.", e);
       }
-      updateMap(MapboxUtils.MAPBOX_DATASET, MapboxUtils.MAPBOX_TILESET, MapboxUtils.MAPBOX_TILESET_NAME);
+      MapboxUpdateQueue.getInstance().add(new MapboxUpdateData(MapboxUtils.MAPBOX_DATASET, MapboxUtils.MAPBOX_TILESET, MapboxUtils.MAPBOX_TILESET_NAME));
    }
    
    /**
@@ -251,8 +253,9 @@ public class MapboxClient
     * @param tileset 
     * @param tilesetName 
     */
-   public void updateMap(String dataset, String tileset, String tilesetName)
+   public static void updateMap(String dataset, String tileset, String tilesetName)
    {
+      logger.info("Updating dataset {} with tileset {} and tilesetName {}", dataset, tileset, tilesetName);
       try
       {
          JsonObject updateJson = new JsonObject();
@@ -260,13 +263,40 @@ public class MapboxClient
          updateJson.addProperty("url", "mapbox://datasets/team6ix/" + dataset);
          updateJson.addProperty("name", tilesetName);
 
-         BasicHttpResponse response = httpClient.executePost("/uploads/v1/" + MapboxUtils.MAPBOX_USER, updateJson.toString(),
-               getDefaultQueryParams());
-         if (response.getStatusCode() != 200)
-         {
-            System.out.println(response.getStatusCode());
-            logger.error("Received error from MapboxAPI updating map: {}" + response.getEntity());
+         for(int i = 0 ; i < 5 ; i++)
+         {         
+            BasicHttpResponse response = httpClient.executePost("/uploads/v1/" + MapboxUtils.MAPBOX_USER,
+                  updateJson.toString(), getDefaultQueryParams());
+            int statusCode = response.getStatusCode();
+            String entity = response.getEntity();
+            if(entity.contains(MapboxUtils.CONCURRENT_TILESET_MESSAGE) || entity.contains(MapboxUtils.CONCURRENT_UPLOAD_MESSAGE))
+            {
+					logger.error("Received retryable error from Mapbox - waiting for 2 seconds: {}" + response.getEntity());
+            
+               try
+               {
+                  Thread.sleep(3000);
+                  continue;
+               }
+               catch (InterruptedException e)
+               {
+                  // Ignore
+               }
+            }
+            else if (statusCode != 200 && statusCode !=201)
+            {
+               logger.error("Received error from MapbsoxAPI updating map: {}" + response.getEntity());
+               break;
+            }
+            else
+            {
+               logger.info("Updated map: {}" + tilesetName);
+               break;
+            }
          }
+
+         logger.error("Could not update map in 5 attempts.");
+
       }
       catch (HttpException e)
       {
@@ -274,7 +304,7 @@ public class MapboxClient
       }
    }
 
-   private Map<String, String> getDefaultQueryParams()
+   private static Map<String, String> getDefaultQueryParams()
    {
       Map<String, String> map = new HashMap<>();
       map.put("access_token", MAPBOX_API_TOKEN);
