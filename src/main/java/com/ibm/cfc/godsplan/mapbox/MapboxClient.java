@@ -161,7 +161,7 @@ public class MapboxClient
     * @param latitude
     * @throws HttpException
     */
-   public void addPerson(String id, double longitude, double latitude)
+   public void addPerson(String id, double longitude, double latitude, int severity)
    {
       JsonObject jsonObject = new JsonObject();
       jsonObject.addProperty("id", id);
@@ -171,7 +171,7 @@ public class MapboxClient
       geometryJson.addProperty("type", "Point");
 
       JsonObject propertiesJson = new JsonObject();
-      propertiesJson.addProperty("severity", 5);
+      propertiesJson.addProperty("severity", severity);
 
       JsonArray coordinates = new JsonArray();
       coordinates.add(longitude);
