@@ -2,15 +2,15 @@ function submitShelter()
 {
 	console.log("Sending request to add new shelter");
 	document.getElementById("shelterForm").submit();
-	window.location.href = "/admin.html";
-	alert("Sending request to add new shelter");
+//	alert("Sending request to add new shelter");
+//	window.location.href = "/admin.html";
 }
 
 function submitDisaster()
 {
 	console.log("Sending request to add new disaster");
 	document.getElementById("disasterForm").submit();
-	window.location.href = "/admin.html";
-	alert("Sending request to add new disaster");
+//	alert("Sending request to add new disaster");
+//	window.location.href = "/admin.html";
 }
 
