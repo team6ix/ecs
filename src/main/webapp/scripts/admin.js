@@ -2,7 +2,7 @@ function submitShelter()
 {
 	console.log("Sending request to add new shelter");
 	document.getElementById("shelterForm").submit();
-	window.location.href = "/index.html";
+	window.location.href = "/admin.html";
 	alert("Sending request to add new shelter");
 }
 
